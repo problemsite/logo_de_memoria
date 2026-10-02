@@ -1,0 +1,1080 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Logo de Memória — ADM</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04182a;--pn:#0a2b45;--pn2:#0f3a5c;--ln:#17608c;--tx:#e9fbff;--mut:#8fc3db;--cy:#00d9ff;--cy2:#00a6d6;--y:#ffd400;--good:#00d26a;--bad:#ff3d5a;--ink:#0a2e4d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg) radial-gradient(circle at 80% -10%,#0b4f78 0,transparent 50%) fixed;color:var(--tx);font-family:'Nunito',system-ui,sans-serif;font-size:15px}
+button,input,select{font:inherit}
+button{cursor:pointer;border-radius:10px;padding:6px 14px;background:var(--pn2);color:var(--tx);font-weight:800;border:2px solid var(--ln)}
+button:hover{filter:brightness(1.18)}
+button:disabled{opacity:.4;cursor:default}
+button.pri{background:var(--cy);color:var(--ink);border-color:var(--ink)}
+button.yel{background:var(--y);color:var(--ink);border-color:var(--ink)}
+button.ok{background:var(--good);color:#04331a;border-color:#04331a}
+button.dng{background:transparent;color:var(--bad);border-color:var(--bad)}
+button.sm{padding:2px 9px;font-size:13px;border-radius:8px}
+input[type=text],input[type=number],select{background:#031423;color:var(--tx);border:2px solid var(--ln);border-radius:8px;padding:5px 9px}
+input[type=text]:focus,input[type=number]:focus,select:focus{outline:none;border-color:var(--cy)}
+input[type=number]{width:90px}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(90deg,#00b8e6,#0089d6 55%,#2a5cff);border-bottom:3px solid var(--ink);display:flex;align-items:center;gap:6px;padding:8px 16px;flex-wrap:wrap}
+header h1{margin:0 14px 0 0;font-family:'Lilita One',sans-serif;font-weight:400;font-size:26px;color:#fff;letter-spacing:1px;text-shadow:0 3px 0 var(--ink)}
+.tab{background:transparent;border-color:transparent;color:#eafcff;font-size:16px}
+.tab.on{background:var(--ink);color:var(--cy);border-color:var(--ink)}
+#status{margin-left:auto;font-weight:800;color:#fff;text-shadow:0 1px 0 var(--ink)}
+#status b{color:var(--y)}
+main{padding:16px;max-width:1700px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--pn);border:2px solid var(--ln);border-radius:16px;padding:14px;margin-bottom:14px}
+.card h2{margin:0 0 10px;font-family:'Lilita One',sans-serif;font-weight:400;font-size:20px;letter-spacing:.5px;color:#fff;display:flex;align-items:center;gap:8px}
+.step{display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--cy);color:var(--ink);align-items:center;justify-content:center;font-size:17px;flex:none}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mut{color:var(--mut)}
+.hint{font-size:13px;color:var(--mut);line-height:1.35}
+.chip{display:inline-block;font-size:12px;font-weight:900;background:var(--y);color:var(--ink);border-radius:12px;padding:0 8px;margin:2px 2px 0 0}
+.tag-good{display:inline-block;font-size:12px;font-weight:900;background:var(--good);color:#04331a;border-radius:10px;padding:0 7px}
+.tag-bad{display:inline-block;font-size:12px;font-weight:900;background:var(--bad);color:#fff;border-radius:10px;padding:0 7px}
+.warn{color:#ff9aa9;font-weight:800}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--y);color:var(--ink);font-weight:900;padding:8px 18px;border-radius:12px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:200;border:3px solid var(--ink)}
+#toast.show{opacity:1}
+
+/* ===== partida ===== */
+.ctl{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+#btnNext{font-family:'Lilita One',sans-serif;font-weight:400;font-size:26px;padding:10px 36px;letter-spacing:1px}
+#nextHint{font-size:16px;font-weight:900;color:var(--y)}
+.pslots{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ps{background:var(--pn2);border:2px solid var(--ln);border-radius:14px;padding:12px}
+.ps.empty{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--mut);font-weight:900;border-style:dashed}
+.ps-top{display:flex;align-items:center;gap:10px}
+.ps-top img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid var(--cy)}
+.ps-top .t{flex:1;min-width:0}
+.ps-top small{font-family:'Lilita One',sans-serif;color:var(--cy)}
+.ps-top b{display:block;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps .live{width:100%;aspect-ratio:8/5;background:#fff;border-radius:10px;margin-top:10px;object-fit:contain;display:block}
+.ps .live.empty{background:#06263d}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#555;margin-right:4px}.dot.on{background:var(--good)}
+.prog{display:flex;flex-direction:column;gap:5px}
+.pr{display:grid;grid-template-columns:30px 1fr 70px 70px;gap:8px;align-items:center;padding:4px 8px;border-radius:8px;background:var(--pn2)}
+.pr.cur{outline:2px solid var(--y)}
+.pr .n{font-weight:900;color:var(--cy)}
+.pr .s{text-align:center;font-weight:900}
+.pr .s.w{color:var(--good)}
+.sum{display:grid;grid-template-columns:30px 1fr 70px 70px;gap:8px;padding:6px 8px;font-weight:900;border-top:2px solid var(--ln);margin-top:4px}
+
+/* ===== logos ===== */
+.lg{display:grid;grid-template-columns:460px 1fr;gap:14px;align-items:start}
+.llist{display:flex;flex-direction:column;gap:7px}
+.li{display:flex;gap:8px;align-items:center;background:var(--pn2);border:2px solid var(--ln);border-radius:12px;padding:6px 8px;cursor:grab}
+.li.sel{border-color:var(--y);box-shadow:0 0 0 2px var(--y)}
+.li.drag{opacity:.4}
+.li.over{border-color:var(--cy);box-shadow:0 -4px 0 var(--cy)}
+.li .hd{font-size:18px;color:var(--mut);cursor:grab}
+.li .num{font-family:'Lilita One',sans-serif;font-size:22px;color:var(--cy);width:28px;text-align:center}
+.li img,.li .noimg{width:72px;height:45px;border-radius:6px;background:#fff;object-fit:contain;flex:none}
+.li .noimg{background:#06263d;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:11px;font-weight:800;text-align:center}
+.li .t{flex:1;min-width:0;line-height:1.25}
+.li .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
+.li .t small{font-size:12px;color:var(--mut);white-space:nowrap}
+.li .t>div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .bt{display:flex;flex-direction:column;gap:3px}
+.dropzone-out{border:2px dashed var(--ln);border-radius:12px;padding:8px;min-height:44px}
+.total-box{margin-top:10px;padding:10px;border-radius:12px;background:var(--pn2);font-weight:900}
+
+.ed-top{display:grid;grid-template-columns:1fr 1.25fr;gap:14px}
+#logoName{font-size:22px;font-weight:900;width:100%}
+.save-st{font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;color:var(--good)}
+.real-drop{border:3px dashed var(--y);border-radius:16px;background:#062a44;display:flex;gap:12px;align-items:center;padding:10px;cursor:pointer;transition:background .15s}
+.real-drop:hover,.real-drop.over{background:#0b3d61}
+.real-drop .pv{width:160px;height:100px;border-radius:10px;background:#fff;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#9bb;font-weight:900;font-size:40px}
+.real-drop .pv img{width:100%;height:100%;object-fit:contain}
+.real-drop b{font-family:'Lilita One',sans-serif;font-weight:400;font-size:19px;color:var(--y)}
+
+.vtabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.vtab{border-radius:14px;padding:10px 14px;text-align:left;border:3px solid transparent;background:var(--pn2);opacity:.6;display:flex;flex-direction:column;gap:2px}
+.vtab .h{font-family:'Lilita One',sans-serif;font-weight:400;font-size:22px;letter-spacing:.5px}
+.vtab .s{font-size:13px;font-weight:800}
+.vtab.good .h{color:var(--good)}.vtab.bad .h{color:var(--bad)}
+.vtab.on{opacity:1}
+.vtab.good.on{border-color:var(--good);background:#063b26}
+.vtab.bad.on{border-color:var(--bad);background:#43101b}
+.vtab .cnt{font-size:12px;color:var(--mut);font-weight:800}
+#recFrame{border-radius:18px;padding:8px;background:var(--pn2);border:4px solid var(--ln)}
+#recFrame.good{border-color:var(--good)}#recFrame.bad{border-color:var(--bad)}
+#recBanner{font-family:'Lilita One',sans-serif;font-weight:400;font-size:20px;text-align:center;padding:4px;border-radius:10px;margin-bottom:8px}
+#recFrame.good #recBanner{background:var(--good);color:#04331a}
+#recFrame.bad #recBanner{background:var(--bad);color:#fff}
+#recFrame.testing #recBanner{background:var(--y);color:var(--ink)}
+#recFrame.recording{border-color:#ff2b4a;box-shadow:0 0 0 4px rgba(255,43,74,.35)}
+#recFrame.recording #recBanner{background:#ff2b4a;color:#fff}
+#recOverlay{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(4,24,42,.45);cursor:pointer;border-radius:12px}
+#recOverlay.hide{display:none}
+#recOverlay.has{background:none;justify-content:flex-start;padding-top:10px;pointer-events:none}
+#recOverlay.has .big{font-size:20px;padding:4px 18px;pointer-events:auto;cursor:pointer}
+#recOverlay.has .sm{display:none}
+#recOverlay .big{font-family:'Lilita One',sans-serif;font-size:34px;color:#fff;background:#ff2b4a;border:4px solid var(--ink);border-radius:20px;padding:8px 30px;box-shadow:0 7px 0 var(--ink)}
+#recOverlay .sm{font-weight:900;color:#fff;text-shadow:0 2px 0 var(--ink);font-size:15px;text-align:center;max-width:70%}
+.recbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;border-radius:14px;background:#031423}
+#btnRec{font-family:'Lilita One',sans-serif;font-weight:400;font-size:22px;padding:8px 22px;background:#ff2b4a;color:#fff;border-color:var(--ink);letter-spacing:.5px}
+#btnRec.on{background:#fff;color:#ff2b4a}
+.rectime{font-family:'Lilita One',sans-serif;font-size:30px;color:#fff;min-width:110px;font-variant-numeric:tabular-nums}
+.rectime.on{color:#ff6b80}
+.rectime .dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:#ff2b4a;margin-right:8px;vertical-align:middle;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.recinfo{font-size:13px;color:var(--mut);font-weight:800;line-height:1.35}
+#recWrap{width:100%;max-width:1060px;aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:12px;margin:0 auto}
+#recHost .bd.cc,#recHost .bd.cc *{cursor:var(--cc)!important}
+#recHost .bd.cc [data-key]{cursor:var(--cc-hand)!important}
+#recHost{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;overflow:hidden;background:#00a6ff linear-gradient(135deg,#00e5ff 0%,#00b3ff 45%,#0a6cff 100%)}
+.rec-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.ed-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.chgrid{display:grid;grid-template-columns:110px 1fr;gap:8px 10px;align-items:center}
+.swsel{display:flex;flex-wrap:wrap;gap:5px}
+.swsel button{width:26px;height:26px;padding:0;border-radius:7px;border:3px solid var(--ink);opacity:.3}
+.swsel button.on{opacity:1;box-shadow:0 0 0 2px var(--y)}
+.swsel.off{pointer-events:none;filter:grayscale(.7);opacity:.45}
+.who-good{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wg{border-radius:14px;padding:10px;background:var(--pn2);border:3px solid var(--ln);display:flex;align-items:center;gap:10px;opacity:.6;text-align:left}
+.wg img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid var(--cy)}
+.wg.on{opacity:1;border-color:var(--good);background:#063b26}
+.wg b{display:block;font-size:17px}
+.wg small{font-weight:800;color:var(--mut)}
+.map{margin:10px 0;padding:10px;border-radius:12px;background:#031423;font-weight:900;line-height:1.6}
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.notes .nb{background:var(--pn2);border-radius:12px;padding:10px}
+.notes input[type=number]{width:100%;font-size:22px;font-weight:900;text-align:center}
+.notes input[type=range]{width:100%}
+
+/* ===== config ===== */
+.cfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.opt{display:flex;gap:10px;align-items:flex-start;background:var(--pn2);border-radius:12px;padding:10px}
+.opt input[type=checkbox]{width:20px;height:20px;margin-top:3px;flex:none;accent-color:var(--cy)}
+.opt div{flex:1}
+.pal{display:flex;flex-wrap:wrap;gap:8px}
+.pal label{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mut)}
+.pal input[type=color]{width:44px;height:36px;border:0;padding:0;background:none;cursor:pointer}
+
+/* ---------- preview da contagem ---------- */
+.ivw{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:16px;align-items:start}
+@media (max-width:900px){.ivw{grid-template-columns:1fr}}
+.ivf{display:flex;flex-direction:column;gap:10px}
+.ivf fieldset{border:2px solid var(--ln);border-radius:12px;padding:8px 12px 12px;margin:0;background:var(--pn2)}
+.ivf legend{font-family:'Lilita One',sans-serif;font-size:16px;color:var(--y);padding:0 6px}
+.ivf label{display:flex;align-items:center;gap:8px;margin-top:6px;font-weight:800;font-size:13px;color:var(--mut)}
+.ivf label input{flex:1;min-width:0}
+.ivf label input[type=number]{flex:none;width:70px}
+.pvbox{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:3px solid var(--ink);background:#00a6ff linear-gradient(135deg,#00e5ff 0%,#00b3ff 45%,#0a6cff 100%)}
+.pvin{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;font-family:'Nunito',sans-serif;color:#0a2e4d}
+.pvin .ghost{position:absolute;inset:60px 120px;border-radius:24px;background:rgba(255,255,255,.55);border:4px solid rgba(10,46,77,.3)}
+.pvin .dim{position:absolute;inset:0;background:rgba(10,46,77,.5)}
+.pvin .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.pvin .panel{background:#fff;border:4px solid #0a2e4d;border-radius:24px;box-shadow:0 8px 0 #0a2e4d}
+.pvin .big{font-family:'Lilita One',sans-serif;font-size:120px;color:#ffd400;-webkit-text-stroke:5px #0a2e4d;paint-order:stroke fill;text-shadow:0 9px 0 #0a2e4d;text-align:center;line-height:1;animation:pvpop .45s both}
+.pvin .big small{display:block;font-family:'Nunito',sans-serif;font-weight:900;font-size:30px;-webkit-text-stroke:0;text-shadow:0 3px 0 #0a2e4d;color:#fff;margin-top:14px}
+.pvin .intro{padding:24px 40px 30px;text-align:center;animation:pvpop .45s both;max-width:90%}
+.pvin .intro .r{font-family:'Lilita One',sans-serif;font-size:24px;color:#fff;background:#00a6d6;border:4px solid #0a2e4d;border-radius:16px;padding:2px 18px;display:inline-block;box-shadow:0 4px 0 #0a2e4d}
+.pvin .intro .s{font-weight:900;font-size:22px;color:#00a6d6;margin-top:12px;text-transform:uppercase;letter-spacing:2px}
+.pvin .intro .nm{font-family:'Lilita One',sans-serif;font-size:72px;line-height:1;text-transform:uppercase;letter-spacing:2px}
+.pvin .intro .chal{display:flex;flex-direction:column;gap:8px;align-items:center;margin-top:14px}
+.pvin .intro .chal span{font-weight:900;font-size:26px;background:#ffd400;border:4px solid #0a2e4d;border-radius:24px;padding:2px 20px;box-shadow:0 4px 0 #0a2e4d}
+.pvin .intro .tag{font-weight:900;font-size:18px;color:#3d7a99;margin-top:12px}
+.pvin .intro .n{font-family:'Lilita One',sans-serif;font-size:110px;line-height:1;color:#ffd400;-webkit-text-stroke:4px #0a2e4d;paint-order:stroke fill;text-shadow:0 7px 0 #0a2e4d;margin-top:6px;animation:pvpop .5s both}
+.pvin .ann{text-align:center;animation:pvpop .45s both;max-width:86%}
+.pvin .ann .h{display:inline-block;font-family:'Lilita One',sans-serif;font-size:44px;color:#0a2e4d;background:#ffd400;border:5px solid #0a2e4d;border-radius:22px;padding:2px 28px;box-shadow:0 7px 0 #0a2e4d}
+.pvin .ann .t{margin-top:22px;font-family:'Lilita One',sans-serif;font-size:62px;line-height:1.05;color:#fff;-webkit-text-stroke:4px #0a2e4d;paint-order:stroke fill;text-shadow:0 7px 0 #0a2e4d}
+.pvin .mouse{position:absolute;width:26px;height:26px;transition:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+@keyframes pvpop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.pvbar{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.pvbar button.on{background:var(--y);color:var(--ink)}
+.pvlbl{font-weight:900;color:var(--mut);font-size:13px;margin-left:auto}
+.pvin .cur2{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#9e0019 0 26px,#d6002a 26px 52px,#b8001f 52px 70px,#7a0013 70px 84px)}
+.pvin .cdnum{font-family:'Lilita One',sans-serif;font-size:300px;line-height:1;color:#ffd400;-webkit-text-stroke:8px #0a2e4d;paint-order:stroke fill;text-shadow:0 14px 0 #0a2e4d;animation:pvslam .6s cubic-bezier(.2,1.5,.4,1) both}
+.pvin .ttlw{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;max-width:90%}
+.pvin .ttl{animation:pvslam .6s cubic-bezier(.2,1.5,.4,1) both}
+.pvin .ttl .r{display:inline-block;font-family:'Lilita One',sans-serif;font-size:26px;color:#fff;background:#00a6d6;border:4px solid #0a2e4d;border-radius:16px;padding:2px 18px;box-shadow:0 4px 0 #0a2e4d}
+.pvin .ttl .s{font-weight:900;font-size:24px;color:#fff;margin-top:10px;text-transform:uppercase;letter-spacing:3px;text-shadow:0 3px 0 #0a2e4d}
+.pvin .ttl .nm{font-family:'Lilita One',sans-serif;font-size:120px;line-height:1;color:#fff;text-transform:uppercase;letter-spacing:3px;-webkit-text-stroke:6px #0a2e4d;paint-order:stroke fill;text-shadow:0 10px 0 #0a2e4d}
+.pvin .ttl .an{font-family:'Lilita One',sans-serif;font-size:48px;color:#ffd400;-webkit-text-stroke:4px #0a2e4d;paint-order:stroke fill;text-shadow:0 6px 0 #0a2e4d;margin-top:6px}
+.pvin .chs{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-width:1000px}
+.pvin .chs span{font-family:'Lilita One',sans-serif;font-size:40px;background:#ffd400;color:#0a2e4d;border:5px solid #0a2e4d;border-radius:26px;padding:4px 26px;box-shadow:0 7px 0 #0a2e4d}
+.pvin .chs span.hid{visibility:hidden}.pvin .chs span.slam{animation:pvslam .55s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pvslam{0%{transform:scale(3.4) rotate(-10deg);opacity:0}50%{transform:scale(.9) rotate(2deg);opacity:1}72%{transform:scale(1.06) rotate(-1deg)}100%{transform:scale(1) rotate(0)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎨 LOGO DE MEMÓRIA · ADM</h1>
+  <button class="tab on" data-tab="ctrl">🎮 Partida</button>
+  <button class="tab" data-tab="logos">🖼️ Logos &amp; Rodadas</button>
+  <button class="tab" data-tab="config">⚙️ Configurações</button>
+  <div id="status">conectando…</div>
+</header>
+
+<main>
+<!-- ================= PARTIDA ================= -->
+<section class="pane on" id="tab-ctrl">
+  <div class="card">
+    <div class="row"><button class="yel" id="btnNext">▶ AVANÇAR</button><span id="nextHint"></span></div>
+    <div class="hint" style="margin-top:6px">O jogo anda sozinho: quando os 2 clicam em PRONTO começa a contagem, e depois de cada revelação a próxima rodada começa automaticamente (dá pra desligar em Configurações). Este botão força o próximo passo. Atalho: <b>espaço</b> ou <b>→</b>.</div>
+  </div>
+  <div class="ctl">
+    <div>
+      <div class="pslots" id="pSlots"></div>
+      <div class="card" style="margin-top:14px">
+        <h2>Controles</h2>
+        <div class="row">
+          <button id="btnStart" class="ok">▶ Começar agora</button>
+          <button id="btnEndNow">⏹ Encerrar tempo</button>
+          <button id="btnPlus15">+15 s</button>
+          <button id="btnSkipRv">⏭ Pular revelação</button>
+          <button id="btnFinal">🏆 Ir para o final</button>
+          <button id="btnLobby" class="dng" title="Para tudo na hora, apaga os desenhos enviados e leva os dois de volta ao lobby (os jogadores continuam nas vagas)">🧹 Cancelar tudo e voltar ao lobby</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <span class="mut">Começar da rodada:</span><select id="selStartRound"></select><button id="btnStartAt">Começar</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button id="btnTestTab">🧪 Abrir jogador de teste</button>
+          <button id="btnClearAll" class="dng">Remover os jogadores</button>
+          <button id="btnClearDrawings" class="dng">Apagar desenhos</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Rodadas e placar roteirizado</h2>
+      <div class="prog" id="prog"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LOGOS ================= -->
+<section class="pane" id="tab-logos">
+  <div class="lg">
+    <div class="card">
+      <h2>Rodadas (arraste para mudar a ordem)</h2>
+      <div class="row" style="margin-bottom:10px"><button class="pri" id="btnNewLogo">+ Nova logo</button><button id="btnPreset">⭐ Criar as 10 sugeridas</button></div>
+      <div id="logoList" class="llist"></div>
+      <div class="hint" style="margin:12px 0 6px">Fora da partida (arraste para cima para incluir):</div>
+      <div id="outList" class="llist dropzone-out"></div>
+      <div class="total-box" id="totalBox"></div>
+    </div>
+    <div id="editor">
+      <div class="card" id="noSel"><h2>Escolha uma logo na lista para editar</h2><div class="hint">Ou clique em "+ Nova logo" / "⭐ Criar as 10 sugeridas". Tudo que você muda aqui é salvo sozinho.</div></div>
+      <div id="edBody" style="display:none">
+        <div class="ed-top">
+          <div class="card" style="margin:0">
+            <h2><span class="step">1</span> Nome da empresa <span class="save-st" id="saveSt"></span></h2>
+            <input type="text" id="logoName" placeholder="ex: Nike" maxlength="30">
+            <div class="row" style="margin-top:10px">
+              <label><input type="checkbox" id="inRounds"> está na partida</label>
+              <button class="sm" id="btnDup">Duplicar</button>
+              <button class="sm dng" id="btnDel">Apagar logo</button>
+            </div>
+          </div>
+          <div class="card" style="margin:0">
+            <h2><span class="step">2</span> LOGO REAL (imagem de verdade)</h2>
+            <label class="real-drop" id="realDrop">
+              <div class="pv" id="realPv">?</div>
+              <div><b>Clique ou arraste aqui a imagem da logo de verdade</b><div class="hint">Ela aparece no meio, na revelação. E pode aparecer clarinha por baixo do quadro de gravação, como molde pra você copiar por cima (só no ADM, o jogador nunca vê).</div></div>
+              <input type="file" id="origFile" accept="image/*" hidden>
+            </label>
+            <div class="row" style="margin-top:6px"><button class="sm dng" id="btnOrigDel">Remover imagem</button><label class="mut"><input type="checkbox" id="refShow" checked> mostrar logo como molde no quadro</label><span class="mut" style="font-size:13px">força do molde:</span><input type="range" id="refOp" min="0.05" max="1" step="0.05" value="0.35" style="width:110px" title="Quanto a logo aparece por baixo do quadro"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h2><span class="step">3</span> Desenhos que o robô vai copiar</h2>
+          <div class="vtabs">
+            <button class="vtab good" data-v="0"><span class="h">✅ VERSÃO BOA</span><span class="s" id="vgTo"></span><span class="cnt" id="vgCnt"></span></button>
+            <button class="vtab bad" data-v="1"><span class="h">❌ VERSÃO RUIM</span><span class="s" id="vbTo"></span><span class="cnt" id="vbCnt"></span></button>
+          </div>
+          <div id="recFrame" class="good">
+            <div id="recBanner"></div>
+            <div id="recWrap"><div id="recHost"></div><div id="recOverlay"><div class="big">⏺ COMEÇAR A GRAVAR</div><div class="sm">Clique para começar. Tudo que o mouse fizer (botões, cores, traços, pausas) vira o movimento do jogador.</div></div></div>
+          </div>
+          <div class="recbar">
+            <button id="btnRec">⏺ COMEÇAR A GRAVAR</button>
+            <span class="rectime" id="recTime">0:00.0</span>
+            <span class="recinfo" id="recInfo"></span>
+          </div>
+          <div class="rec-tools">
+            <button id="btnUndo" title="Fora da gravação: apaga o último passo gravado">↩ Remover último passo</button>
+            <button id="btnClearRec" class="dng">Limpar esta versão</button>
+            <span style="flex:1"></span>
+            <span class="mut">Qualidade do teste</span><input type="range" id="pvQ" min="0" max="100" value="95" style="width:130px"><b id="pvQv">95</b>
+            <button class="yel" id="btnPreview">▶ Testar</button>
+            <button id="btnPreviewStop">⏹ Parar</button>
+          </div>
+          <div class="hint" id="pvEst" style="margin-top:6px"></div>
+        </div>
+
+        <div class="ed-bottom">
+          <div class="card" style="margin:0">
+            <h2><span class="step">4</span> Roteiro desta rodada</h2>
+            <div class="hint" style="margin-bottom:8px">Quem desenha a <b>versão BOA</b> nesta rodada? (o outro desenha a ruim)</div>
+            <div class="who-good">
+              <button class="wg" data-good="1"><img id="wg1img" alt=""><div><small>JOGADOR 1</small><b id="wg1name"></b></div></button>
+              <button class="wg" data-good="2"><img id="wg2img" alt=""><div><small>JOGADOR 2</small><b id="wg2name"></b></div></button>
+            </div>
+            <div class="map" id="mapTxt"></div>
+            <div class="notes">
+              <div class="nb"><div class="mut" style="font-weight:900">Nota do Jogador 1</div><input type="number" id="s1" min="0" max="10" step="0.5"><div class="hint" style="margin-top:6px">fidelidade da cópia: <b id="q1v"></b></div><input type="range" id="q1" min="0" max="100"></div>
+              <div class="nb"><div class="mut" style="font-weight:900">Nota do Jogador 2</div><input type="number" id="s2" min="0" max="10" step="0.5"><div class="hint" style="margin-top:6px">fidelidade da cópia: <b id="q2v"></b></div><input type="range" id="q2" min="0" max="100"></div>
+            </div>
+          </div>
+          <div class="card" style="margin:0">
+            <h2><span class="step">5</span> ⚡ Desafio desta rodada</h2>
+            <div class="chgrid">
+              <span>Tempo</span><div class="row"><input type="number" id="chTime" min="5" max="600" placeholder="padrão"><span class="mut">segundos (vazio = padrão)</span></div>
+              <span>Canvas</span><select id="chScale"><option value="1">Normal</option><option value="0.8">Menor (80%)</option><option value="0.65">Pequeno (65%)</option><option value="0.5">Minúsculo (50%)</option></select>
+              <span>Cores</span><div><label><input type="checkbox" id="chColorsOn"> limitar às cores marcadas</label><div id="chColors" class="swsel" style="margin-top:6px"></div></div>
+              <span>Ferramentas</span><div class="row"><label><input type="checkbox" id="chBucket"> balde</label><label><input type="checkbox" id="chEraser"> borracha</label></div>
+              <span>Pincel</span><select id="chSize"><option value="">todos os tamanhos</option></select>
+              <span>Etiqueta extra</span><div><input type="text" id="chNote" placeholder="ex: 🙈 De olhos fechados!" maxlength="40" style="width:100%"><div class="hint">Só uma etiqueta amarela a mais que aparece junto dos desafios (no topo e antes da rodada). Não muda nada no jogo.</div></div>
+              <span>Texto do desafio</span><div><input type="text" id="chAnn" maxlength="80" style="width:100%"><div class="hint">Aparece GRANDE na tela logo depois da contagem, antes de começar a desenhar. Vazio = usa os desafios automaticamente. Escreva <b>-</b> para não mostrar nada.</div></div>
+            </div>
+            <div id="chChips" style="margin-top:10px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONFIG ================= -->
+<section class="pane" id="tab-config">
+  <div class="card">
+    <h2>Configurações do jogo</h2>
+    <div class="cfg">
+      <label class="opt"><input type="checkbox" data-cfg="roteiro"><div><b>Modo roteiro</b><div class="hint">Os jogadores só mexem o mouse e o desenho sai sozinho (cliques não fazem nada). Desligado = desenho manual.</div></div></label>
+      <label class="opt"><input type="checkbox" data-cfg="needMove"><div><b>Jogador precisa mexer o mouse de verdade</b><div class="hint">Desmarcado (padrão) = o mouse fake refaz a gravação sozinho, no mesmo ritmo. Marcado = o desenho só avança enquanto o jogador mexe o mouse real (a "Velocidade do roteiro" controla quanto anda).</div></div></label>
+      <div class="opt"><div><b>Quando o desenho termina, o mouse…</b><br>
+        <select data-cfg="endMouse" style="margin-top:6px">
+          <option value="real2fake">o mouse real vai para a posição do fake (padrão)</option>
+          <option value="fake2real">o mouse fake vai para a posição do real</option>
+          <option value="none">nada</option>
+        </select>
+        <div class="hint">O navegador não deixa mover o mouse do computador. Na 1ª opção o mouse fake continua sendo o cursor (segue o movimento do mouse e os cliques acontecem onde ele está), então parece que o mouse de verdade ficou onde o desenho terminou.</div></div></div>
+      <label class="opt"><input type="checkbox" data-cfg="customCursor"><div><b>Mouse customizado</b><div class="hint">O site inteiro usa um mouse desenhado igual ao mouse "fake" do roteiro, então quando o mouse de verdade some e o fake aparece ninguém percebe a troca. Desligado = mouse normal do sistema.</div></div></label>
+      <label class="opt"><input type="checkbox" data-cfg="autoFlow"><div><b>Avançar sozinho</b><div class="hint">Depois de cada revelação, a próxima rodada começa automaticamente.</div></div></label>
+      <div class="opt"><div><b>Suspense antes da revelação</b> (com a cortina fechada)<br>
+        <input type="text" data-cfg="suspEmoji" maxlength="8" style="width:70px;text-align:center;font-size:22px" title="Emoji">
+        <input type="text" data-cfg="suspText" maxlength="40" style="width:280px" placeholder="Será que eles lembraram?">
+        <div class="hint">Emoji e frase que aparecem na cortina. As letras dão um pulinho uma de cada vez.</div></div></div>
+      <div class="opt"><div><b>Pausa depois da revelação</b> (segundos)<br><input type="number" data-cfg="afterReveal" min="0" max="60"></div></div>
+      <label class="opt"><input type="checkbox" data-cfg="testMode"><div><b>Modo teste</b><div class="hint">Permite começar com só 1 jogador pronto.</div></div></label>
+      <label class="opt"><input type="checkbox" data-cfg="debug"><div><b>Debug</b><div class="hint">Mostra no canto da tela do jogador o progresso do roteiro.</div></div></label>
+      <label class="opt"><input type="checkbox" data-cfg="autoComplete"><div><b>Completar desenho no fim do tempo</b><div class="hint">Se o tempo acabar antes, o desenho é finalizado na hora.</div></div></label>
+      <div class="opt"><div><b>Tempo padrão</b> (segundos)<br><input type="number" data-cfg="drawTime" min="10" max="600"></div></div>
+      <div class="opt"><div><b>Velocidade do roteiro</b><br><input type="number" data-cfg="speed" min="0.05" max="10" step="0.05"><div class="hint">Só vale com "Jogador precisa mexer o mouse" marcado: quanto o desenho avança por pixel de mouse.</div></div></div>
+      <div class="opt"><div><b>Margem de segurança nas bordas</b> (%)<br><input type="number" data-cfg="edgePct" min="0" max="15"><div class="hint">Deixa o jogo inteiro um pouco menor e centralizado, com um respiro em cima, embaixo e dos lados, pra câmera dos youtubers não tampar nada importante. 0 = sem margem.</div></div></div>
+      <div class="opt"><div><b>Espaço livre nas laterais</b> (% de cada lado)<br><input type="number" data-cfg="gapPct" min="0" max="25"><div class="hint">O jogo fica centralizado com uma faixa só de fundo dos dois lados (pra câmera). 0 = ocupa tudo.</div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>🎬 Contagem e textos de cada rodada</h2>
+    <div class="hint" style="margin-bottom:10px">Tudo salva sozinho. Deixe um texto vazio para ele não aparecer. Use <b>{n}</b> = número da rodada, <b>{total}</b> = total de rodadas, <b>{s}</b> = segundos para desenhar.</div>
+    <div class="ivw">
+      <div class="ivf">
+        <fieldset><legend>1 · Título (com a cortina fechada)</legend>
+          <div class="hint">A cortina fecha (também saindo do lobby) e o título e as regras caem em cima dela. Enquanto isso o mouse fake se posiciona sozinho no ponto inicial.</div>
+          <label>Etiqueta <input type="text" data-cfg="introRound" data-pv="title" maxlength="30"></label>
+          <label>Frase <input type="text" data-cfg="introSub" data-pv="title" maxlength="50"></label>
+          <div class="hint">Embaixo do nome da logo aparece o "Texto do desafio" da logo (passo 5), se tiver.</div>
+        </fieldset>
+        <fieldset><legend>2 · Regras caindo na tela</legend>
+          <label>Tempo <input type="text" data-cfg="introTime" data-pv="chips" maxlength="40"></label>
+          <label>Segundos parado no fim <input type="number" data-cfg="introHold" data-pv="chips" min="0" max="10" step="0.5"></label>
+          <div class="hint">Cada regra da rodada (sem balde, só X cores, tempo…) cai na tela com impacto, uma de cada vez. Para colocar outra coisa, use a "Etiqueta extra" no passo 5 da logo.</div>
+        </fieldset>
+        <fieldset><legend>3 · Cortina abre e começa</legend>
+          <label>Texto <input type="text" data-cfg="goText" data-pv="go" maxlength="20"></label>
+        </fieldset>
+        <fieldset><legend>Extra · Contagem antes da 1ª rodada</legend>
+          <label>Segundos (0 = sem) <input type="number" data-cfg="cdSecs" data-pv="cd" min="0" max="10"></label>
+          <label>Texto embaixo <input type="text" data-cfg="cdText" data-pv="cd" maxlength="40"></label>
+          <label>No fim mostra <input type="text" data-cfg="cdGo" data-pv="cd" maxlength="16"></label>
+        </fieldset>
+      </div>
+      <div>
+        <div class="pvbox" id="pvBox"><div class="pvin" id="pvIn"></div></div>
+        <div class="pvbar">
+          <button data-pvs="title">1 · Título</button><button data-pvs="chips">2 · Regras</button><button data-pvs="go">3 · JÁ!</button>
+          <button class="pri" id="pvPlay">▶ Ver tudo</button>
+          <select id="pvLogo" title="Logo de exemplo"></select>
+          <span class="pvlbl" id="pvLbl"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Paleta de cores padrão</h2>
+    <div id="palEd" class="pal" style="margin:10px 0"></div>
+    <div class="row"><button id="btnPalAdd">+ cor</button><button id="btnPalDel">− última</button><button id="btnPalReset">Restaurar padrão</button><button class="ok" id="btnPalSave">Salvar paleta</button></div>
+  </div>
+</section>
+</main>
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="../firebase-config.js"></script>
+<script src="../engine.js"></script>
+<script>
+(function () {
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtTime = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const fmt1 = v => (Math.round(v * 10) / 10).toFixed(1).replace('.', ',');
+const clone = o => JSON.parse(JSON.stringify(o));
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 1900); }
+const confirmBox = m => window.confirm(m);
+const T_END = 18900; // fim da revelação (igual no jogo)
+
+/* ---------- abas ---------- */
+$$('.tab').forEach(b => b.onclick = () => {
+  $$('.tab').forEach(x => x.classList.toggle('on', x === b));
+  $$('.pane').forEach(p => p.classList.toggle('on', p.id === 'tab-' + b.dataset.tab));
+  if (b.dataset.tab === 'logos') { fitRec(); ensureRec(); }
+});
+const logosVisible = () => $('#tab-logos').classList.contains('on');
+
+/* ---------- Firebase ---------- */
+firebase.initializeApp(window.FIREBASE_CONFIG);
+const db = firebase.database(), auth = firebase.auth();
+const ROOT = window.DB_ROOT || 'logoMemoria';
+const ref = p => db.ref(ROOT + (p ? '/' + p : ''));
+const DEF = { needMove: false, customCursor: true, roteiro: true, autoFlow: true, afterReveal: 4, testMode: true, debug: false, autoComplete: true, drawTime: 60, speed: 0.6, gapPct: 9, edgePct: 5, endMouse: 'real2fake', introHold: 1, cdSecs: 0, cdText: 'Preparem-se!', cdGo: 'JÁ!', introSecs: 3, introRound: 'RODADA {n}', introSub: 'desenhe de memória a logo', introTime: '⏱️ {s} segundos', annSecs: 3, annTitle: '⚡ DESAFIO! ⚡', goText: 'JÁ!', suspEmoji: '🥁', suspText: 'Será que eles lembraram?', rounds: [], palette: null };
+let offset = 0, config = Object.assign({}, DEF), game = { state: 'lobby' }, players = {}, logos = {}, drawings = {}, live = {};
+const now = () => Date.now() + offset;
+
+auth.signInAnonymously().then(() => {
+  db.ref('.info/serverTimeOffset').on('value', s => { offset = s.val() || 0; });
+  db.ref('.info/connected').on('value', s => { if (!s.val()) $('#status').textContent = 'desconectado…'; });
+  ref('config').on('value', s => { config = Object.assign({}, DEF, s.val() || {}); config.rounds = Engine.asArray(config.rounds); renderConfig(); renderAll(); });
+  ref('game').on('value', s => { game = s.val() || { state: 'lobby' }; renderCtrl(); });
+  ref('players').on('value', s => { players = s.val() || {}; renderAll(); });
+  ref('logos').on('value', s => { logos = s.val() || {}; renderAll(); });
+  ref('drawings').on('value', s => { drawings = s.val() || {}; renderCtrl(); });
+  ref('live').on('value', s => { live = s.val() || {}; updateLive(); });
+  setInterval(tick, 250);
+}).catch(e => { $('#status').textContent = 'Erro: ' + e.message; });
+function renderAll() { renderCtrl(); renderLogoList(); if (E) { renderScriptBox(); renderVTabs(); updateHead(); } try { pvFillLogos(); } catch (_) { } }
+
+/* ---------- jogadores (2 vagas) ---------- */
+const avCache = {};
+function avatarText(p) {
+  if (!p) return '?';
+  const nm = String(p.name || '').trim();
+  if (!nm || /^jogador\s*[12]$/i.test(nm)) return 'J' + (p.slot || (nm.slice(-1)) || '');
+  return nm.charAt(0).toUpperCase();
+}
+function defaultAvatar(name) {
+  const k = name || '?'; if (avCache[k]) return avCache[k];
+  const c = document.createElement('canvas'); c.width = c.height = 80; const x = c.getContext('2d');
+  const cols = ['#00b3ff', '#00d2a0', '#ff7a00', '#7a5cff', '#ff3d5a', '#00a6c7', '#ffb800', '#ff4fd8'];
+  let h = 0; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  x.fillStyle = cols[h % cols.length]; x.fillRect(0, 0, 80, 80);
+  x.fillStyle = '#fff'; x.font = 'bold 46px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = 'bold ' + (k.length > 1 ? 34 : 46) + 'px sans-serif'; x.fillText(k, 40, 44);
+  return (avCache[k] = c.toDataURL());
+}
+const avatar = p => (p && p.photo) || defaultAvatar(avatarText(p));
+const namedPlayers = () => Object.entries(players).filter(([, p]) => p && p.name).map(([u, p]) => Object.assign({ uid: u }, p)).sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
+function seatList() {
+  const list = namedPlayers(), seat = [null, null];
+  list.forEach(p => { const n = +p.slot; if ((n === 1 || n === 2) && !seat[n - 1]) seat[n - 1] = p; });
+  list.forEach(p => { if (seat.includes(p) || +p.slot === 1 || +p.slot === 2) return; const k = seat.indexOf(null); if (k >= 0) seat[k] = p; });
+  return seat;
+}
+const slots = seatList; // [vaga 1, vaga 2] (null = livre)
+const slotName = n => { const p = slots()[n - 1]; return p ? p.name : 'Jogador ' + n; };
+const slotAvatar = n => { const p = slots()[n - 1]; return p ? avatar(p) : defaultAvatar('J' + n); };
+
+/* ---------- roteiro ---------- */
+const nRounds = () => (config.rounds || []).length;
+const roundLogo = r => logos[(config.rounds || [])[r]] || null;
+const logoName = id => (logos[id] && logos[id].name) || '(apagada)';
+function scriptOf(l) {
+  const s = (l && l.script) || {};
+  return { good: +s.good === 1 ? 1 : 2, s1: s.s1 == null || s.s1 === '' ? 5 : +s.s1, s2: s.s2 == null || s.s2 === '' ? 5 : +s.s2, q1: s.q1 == null || s.q1 === '' ? 100 : +s.q1, q2: s.q2 == null || s.q2 === '' ? 100 : +s.q2 };
+}
+const roundTime = l => Engine.challengeOf(l).time || +config.drawTime || 60;
+const cfgN = (k, d, lo, hi) => { const v = +config[k]; return Math.max(lo, Math.min(hi, isFinite(v) && config[k] !== '' && config[k] != null ? v : d)); };
+const cdMs = () => { const x = cfgN('cdSecs', 0, 0, 10); return x ? x * 1000 + 500 : 0; };
+const introMs = l => Engine.introPlan(l, config).total;
+const chipsOf = l => Engine.challengeChips(Engine.challengeOf(l), +config.drawTime || 60);
+const chipsHtml = l => chipsOf(l).map(c => `<span class="chip">${esc(c)}</span>`).join('');
+function totals() { let a = 0, b = 0; for (let r = 0; r < nRounds(); r++) { const s = scriptOf(roundLogo(r)); a += s.s1; b += s.s2; } return [Math.round(a * 10) / 10, Math.round(b * 10) / 10]; }
+
+/* =================================================
+   PARTIDA
+   ================================================= */
+function startGame(r, withCd) {
+  if (!nRounds()) { toast('Adicione logos na partida primeiro'); return; }
+  r = Math.max(0, Math.min(nRounds() - 1, r | 0));
+  const t = now(), st = t + (withCd ? cdMs() : 0) + introMs(roundLogo(r));
+  ref('drawings').remove(); ref('live').remove();
+  const g = { state: 'round', round: r, startAt: st, endAt: st + roundTime(roundLogo(r)) * 1000 };
+  if (withCd && cdMs()) g.cdAt = t;
+  ref('game').set(g);
+}
+function phase() {
+  if (game.state !== 'round') return game.state || 'lobby';
+  const t = now();
+  if (t < +game.startAt) return 'intro';
+  if (t < +game.endAt) return 'drawing';
+  if (t < +game.endAt + T_END) return 'reveal';
+  return 'after';
+}
+function endNow() { if (phase() === 'drawing') ref('game/endAt').set(now()); }
+function skipReveal() { if (phase() === 'reveal') ref('game').update({ endAt: now() - T_END }); }
+function nextRound() {
+  const r = game.round | 0;
+  if (r + 1 >= nRounds()) { ref('game').update({ state: 'final' }); return; }
+  const st = now() + introMs(roundLogo(r + 1));
+  ref('game').set({ state: 'round', round: r + 1, startAt: st, endAt: st + roundTime(roundLogo(r + 1)) * 1000 });
+}
+// cancela tudo de uma vez (uma única escrita): sem isso o jogador ainda via "pronto" e a partida recomeçava sozinha
+function toLobby() {
+  const upd = { game: { state: 'lobby', resetAt: now() }, drawings: null, live: null };
+  Object.keys(players).forEach(u => upd['players/' + u + '/ready'] = false);
+  return ref().update(upd).then(() => toast('Partida cancelada — todos de volta ao lobby'));
+}
+function nextAction() {
+  const p = phase(), r = game.round | 0;
+  if (p === 'lobby') return ['Começar a partida (contagem 3, 2, 1)', () => startGame(0, true)];
+  if (p === 'intro') return ['Pular a contagem da rodada ' + (r + 1), () => ref('game').update({ startAt: now(), endAt: now() + roundTime(roundLogo(r)) * 1000, cdAt: null })];
+  if (p === 'drawing') return ['Encerrar o tempo agora', endNow];
+  if (p === 'reveal') return ['Pular a revelação', skipReveal];
+  if (p === 'after') return r + 1 < nRounds() ? [`Próxima rodada: ${r + 2}. ${logoName(config.rounds[r + 1])}`, nextRound] : ['Mostrar o CAMPEÃO', () => ref('game').update({ state: 'final' })];
+  return ['Voltar ao lobby', toLobby];
+}
+$('#btnNext').onclick = () => nextAction()[1]();
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+  if ($('#tab-ctrl').classList.contains('on') && (e.code === 'Space' || e.code === 'ArrowRight')) { e.preventDefault(); nextAction()[1](); }
+  if (logosVisible() && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (recording) toast('Gravando: use os botões ↶ Desfazer / ↷ Refazer do quadro (assim fica gravado)'); else undo(); }
+});
+$('#btnStart').onclick = () => startGame(0, true);
+$('#btnStartAt').onclick = () => startGame(+$('#selStartRound').value, false);
+$('#btnEndNow').onclick = endNow;
+$('#btnPlus15').onclick = () => { if (phase() === 'drawing') ref('game/endAt').set(+game.endAt + 15000); };
+$('#btnSkipRv').onclick = skipReveal;
+$('#btnFinal').onclick = () => ref('game').update({ state: 'final' });
+$('#btnLobby').onclick = () => { if (confirmBox('Cancelar tudo e voltar ao lobby?\n\nOs jogadores continuam nas vagas (com nome e foto), o "pronto" é desmarcado e os desenhos enviados são apagados.')) toLobby(); };
+$('#btnTestTab').onclick = () => window.open('../index.html?aba=' + Date.now(), '_blank');
+$('#btnClearAll').onclick = () => { if (confirmBox('Remover os jogadores? (as 2 vagas ficam livres de novo)')) { ref('players').remove(); ref('seats').remove(); ref('live').remove(); } };
+$('#btnClearDrawings').onclick = () => { if (confirmBox('Apagar todos os desenhos enviados?')) { ref('drawings').remove(); ref('live').remove(); } };
+
+const phaseName = { lobby: 'Lobby', intro: 'Começando', drawing: 'Desenhando', reveal: 'Revelação', after: 'Fim da rodada', final: 'Final' };
+function tick() {
+  const p = phase();
+  let t = '';
+  if (p === 'drawing') t = ' · ' + fmtTime(+game.endAt - now());
+  if (p === 'intro') t = ' · começa em ' + Math.ceil((+game.startAt - now()) / 1000) + 's';
+  $('#status').innerHTML = `<b>${phaseName[p] || p}</b>${game.state === 'round' || game.state === 'final' ? ` · rodada ${(game.round | 0) + 1}/${nRounds()} (${esc(logoName(config.rounds[game.round | 0]))})` : ''}${t}`;
+  const [lbl] = nextAction();
+  if ($('#nextHint').textContent !== lbl) $('#nextHint').textContent = lbl;
+}
+let ctrlKey = '';
+function renderCtrl() {
+  const opts = (config.rounds || []).map((id, i) => `<option value="${i}">${i + 1}. ${esc(logoName(id))}</option>`).join('');
+  if ($('#selStartRound').innerHTML !== opts) $('#selStartRound').innerHTML = opts;
+  const sl = slots(), r = game.round | 0, dr = drawings[r] || {};
+  const key = JSON.stringify([sl.map(p => p && [p.uid, p.name, p.online, !!p.photo, !!p.ready, !!dr[p.uid]]), config.rounds, Object.keys(logos).map(k => [k, logos[k].name, logos[k].script]), r, game.state]);
+  if (key === ctrlKey) { updateLive(); return; }
+  ctrlKey = key;
+  $('#pSlots').innerHTML = [0, 1].map(i => {
+    const p = sl[i];
+    if (!p) return `<div class="ps empty">JOGADOR ${i + 1}: vaga livre</div>`;
+    return `<div class="ps" data-uid="${p.uid}"><div class="ps-top"><img src="${avatar(p)}" alt=""><div class="t"><small>JOGADOR ${i + 1}${i === 1 ? ' · 👑 vencedor' : ''}</small><b>${esc(p.name)}</b><span class="mut"><span class="dot ${p.online ? 'on' : ''}"></span>${p.online ? 'online' : 'offline'} · ${p.ready ? '<span style="color:var(--good)">PRONTO</span>' : 'não pronto'}${dr[p.uid] ? ' · ✔ desenho enviado' : ''}</span></div>
+      <div class="row" style="flex-direction:column;align-items:stretch"><button class="sm" data-ready="${p.uid}">${p.ready ? 'Desmarcar pronto' : 'Marcar pronto'}</button><button class="sm dng" data-kick="${p.uid}">Remover</button></div></div>
+      <img class="live empty" alt=""></div>`;
+  }).join('');
+  $$('[data-kick]').forEach(b => b.onclick = () => { if (!confirmBox('Remover este jogador?')) return; const u = b.dataset.kick, n = +((players[u] || {}).slot); ref('players/' + u).remove(); if (n) ref('seats/' + n).remove(); });
+  $$('[data-ready]').forEach(b => b.onclick = () => ref('players/' + b.dataset.ready + '/ready').set(!(players[b.dataset.ready] || {}).ready));
+  let a = 0, bb = 0;
+  $('#prog').innerHTML = `<div class="pr" style="background:none"><span></span><span class="mut">Logo</span><span class="s mut">${esc(slotName(1))}</span><span class="s mut">${esc(slotName(2))}</span></div>` +
+    (config.rounds || []).filter(id => logos[id]).map((id, i) => {
+      const s = scriptOf(logos[id]); a += s.s1; bb += s.s2;
+      return `<div class="pr ${game.state === 'round' && i === r ? 'cur' : ''}"><span class="n">${i + 1}</span><span>${esc(logoName(id))} <span class="tag-good" title="quem pega a versão boa">boa → J${s.good}</span></span><span class="s ${s.s1 > s.s2 ? 'w' : ''}">${fmt1(s.s1)}</span><span class="s ${s.s2 > s.s1 ? 'w' : ''}">${fmt1(s.s2)}</span></div>`;
+    }).join('') +
+    `<div class="sum"><span></span><span>TOTAL ${bb > a ? '→ 👑 ' + esc(slotName(2)) + ' vence' : '<span class="warn">⚠ Jogador 2 NÃO está vencendo</span>'}</span><span class="s">${fmt1(a)}</span><span class="s">${fmt1(bb)}</span></div>`;
+  updateLive();
+}
+function updateLive() {
+  const r = game.round | 0, dr = drawings[r] || {};
+  $$('.ps[data-uid]').forEach(c => {
+    const u = c.dataset.uid, im = c.querySelector('.live'), src = (phase() === 'drawing' ? live[u] : (dr[u] || live[u])) || '';
+    if (im.getAttribute('src') !== src) { if (src) { im.src = src; im.classList.remove('empty'); } else { im.removeAttribute('src'); im.classList.add('empty'); } }
+  });
+}
+
+/* =================================================
+   LOGOS & RODADAS
+   ================================================= */
+// Sugestão: Jogador 1 lidera no começo, Jogador 2 vira no final e vence
+const PRESET = [
+  { name: 'Nike', challenge: {}, script: { good: 1, s1: 8, s2: 5 } },
+  { name: "McDonald's", challenge: { time: 20, announce: 'Rápido! Vocês só têm 20 segundos! ⏱️' }, script: { good: 2, s1: 4, s2: 7 } },
+  { name: 'YouTube', challenge: { scale: 0.5, announce: 'O canvas encolheu! 🔍' }, script: { good: 1, s1: 8.5, s2: 4.5 } },
+  { name: 'Mastercard', challenge: {}, script: { good: 1, s1: 9, s2: 6 } },
+  { name: 'Pepsi', challenge: { bucket: false, announce: 'Sem balde! Vai ter que pintar na mão! 🖌️' }, script: { good: 2, s1: 4.5, s2: 8 } },
+  { name: 'Apple', challenge: { time: 30, announce: 'Só 30 segundos pra essa maçã! 🍎' }, script: { good: 1, s1: 7.5, s2: 6 } },
+  { name: 'Spotify', challenge: { fixedSize: 1, announce: 'Só o pincel fininho! ✏️' }, script: { good: 2, s1: 3, s2: 8.5 } },
+  { name: 'Burger King', challenge: { colors: ['#ff1f3d', '#0047ff'], announce: 'Só 2 cores! Se virem! 🎨' }, script: { good: 2, s1: 5, s2: 7.5 } },
+  { name: 'Google Chrome', challenge: { scale: 0.65, time: 45, announce: 'Canvas pequeno E pouco tempo! 😱' }, script: { good: 1, s1: 7, s2: 6.5 } },
+  { name: 'Coca-Cola', challenge: { time: 90, eraser: false, announce: 'Última rodada! E sem borracha! 🚫' }, script: { good: 2, s1: 3.5, s2: 9.5 } }
+];
+const VLABEL = ['Versão BOA', 'Versão RUIM'];
+let editId = null, E = null, vi = 0, rec = null, recKey = '', previewing = null, saveTimer = null, recording = null;
+// duração em texto: "12,4 s" ou "1 min 05 s"
+const fmtDur = ms => { ms = Math.max(0, ms || 0); if (ms < 60000) return (ms / 1000).toFixed(1).replace('.', ',') + ' s'; const s = Math.round(ms / 1000); return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0') + ' s'; };
+const fmtClock = ms => { ms = Math.max(0, ms || 0); const s = Math.floor(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + '.' + Math.floor(ms % 1000 / 100); };
+function recElapsed() { return recording ? recording.base + (performance.now() - recording.t0) : (E && curVer() ? curVer().dur || 0 : 0); }
+function startRec() {
+  if (!E || !rec || recording) return;
+  stopPreview();
+  let base = curVer().dur || 0;
+  if (curVer().actions.length) {
+    if (confirmBox('Esta versão já tem desenho.\n\nOK = apagar e gravar do zero\nCancelar = continuar de onde parou')) { Object.assign(curVer(), { actions: [], cw: 0, ch: 0, dur: 0 }); base = 0; redraw(); rec.resetState(); }
+  } else rec.resetState(); // começando do zero: cor e pincel padrão
+  rec.clearTrack(); rec.setManual(true);
+  recording = { t0: performance.now(), base, iv: setInterval(recTick, 100) };
+  recTick(); updateHead(); updateInfo();
+}
+function stopRec() {
+  if (!recording) return;
+  const total = recElapsed();
+  clearInterval(recording.iv); recording = null;
+  if (E && curVer()) curVer().dur = Math.round(total);
+  if (rec) { rec.setManual(false); rec.clearTrack(); rec.setTimer('', 1, false); }
+  recTick(); updateHead(); updateInfo(); scheduleSave();
+}
+function recTick() {
+  const el = recElapsed(), on = !!recording, t = E ? roundTime({ challenge: E.challenge }) * 1000 : 60000;
+  if (on && el >= t) { stopRec(); toast('⏱ Acabou o tempo da rodada — gravação parada'); return; }
+  $('#recTime').innerHTML = (on ? '<span class="dot"></span>' : '') + fmtClock(el);
+  $('#recTime').classList.toggle('on', on);
+  $('#btnRec').textContent = on ? '⏹ PARAR GRAVAÇÃO' : '⏺ COMEÇAR A GRAVAR';
+  $('#btnRec').classList.toggle('on', on);
+  $('#recOverlay').classList.toggle('hide', on || !!previewing);
+  $('#recOverlay').classList.toggle('has', !!(E && curVer() && curVer().actions.length));
+  $('#recOverlay .big').textContent = E && curVer() && curVer().actions.length ? '⏺ GRAVAR DE NOVO / CONTINUAR' : '⏺ COMEÇAR A GRAVAR';
+  if (on && rec) rec.setTimer(fmtTime(el).replace(/^0:/, '0:'), 1 - el / t, el > t * 0.85);
+  $('#recInfo').innerHTML = on
+    ? `Gravando a <b>${vi === 0 ? 'VERSÃO BOA' : 'VERSÃO RUIM'}</b>… tempo da rodada: <b>${Math.round(t / 1000)} s</b>${el > t ? ' <span class="warn">⚠ já passou do tempo da rodada</span>' : ''}`
+    : (E && curVer() && curVer().actions.length ? `Gravação desta versão: <b style="color:#fff">${fmtDur(curVer().dur || 0)}</b> · tempo da rodada: <b>${Math.round(t / 1000)} s</b>` + ((curVer().dur || 0) > t ? ' <span class="warn">⚠ maior que o tempo da rodada</span>' : '') : 'Nada gravado ainda nesta versão.');
+}
+$('#btnRec').onclick = () => recording ? stopRec() : startRec();
+$('#recOverlay').onclick = () => startRec();
+const fmtTime2 = fmtClock;
+const blankVer = i => ({ label: VLABEL[i], actions: [], cw: 0, ch: 0 });
+
+/* --- lista com arrastar e soltar --- */
+let dragId = null;
+function asArrDur(l, k) { const v = Engine.asArray(l.versions)[k]; return (v && +v.dur) || 0; }
+function itemHtml(id, i, inRound) {
+  const l = logos[id], vs = Engine.versionsOf(l), s = scriptOf(l);
+  const hasG = vs[0] && vs[0].actions.length, hasB = vs[1] && vs[1].actions.length;
+  const warns = [!l.image && 'sem logo real', !hasG && 'sem versão boa', !hasB && 'sem versão ruim'].filter(Boolean);
+  const durs = [0, 1].map(k => vs[k] && vs[k].actions.length ? fmtDur(asArrDur(l, k)) : null);
+  return `<div class="li ${id === editId ? 'sel' : ''}" draggable="true" data-id="${id}" data-in="${inRound ? 1 : 0}">
+    <span class="hd">⠿</span>${inRound ? `<span class="num">${i + 1}</span>` : ''}
+    ${l.thumb ? `<img src="${l.thumb}" alt="">` : '<div class="noimg">sem<br>imagem</div>'}
+    <div class="t"><b>${esc(l.name)}</b>
+      ${inRound ? `<small><span class="tag-good" title="versão boa vai para ${esc(slotName(s.good))}">✅ J${s.good}</span> <span class="tag-bad" title="versão ruim vai para ${esc(slotName(3 - s.good))}">❌ J${3 - s.good}</span> · notas ${fmt1(s.s1)} × ${fmt1(s.s2)} · ${roundTime(l)}s</small>` : ''}
+      ${durs[0] || durs[1] ? `<small>⏱ boa ${durs[0] || '—'} · ruim ${durs[1] || '—'}</small>` : ''}
+      <div>${chipsHtml(l)}${warns.length ? `<small class="warn" title="${warns.join(' · ')}"> ⚠ ${warns.length === 3 ? 'falta tudo' : warns.join(', ')}</small>` : ' <small style="color:var(--good)">✔ pronta</small>'}</div></div>
+    <div class="bt">${inRound ? `<button class="sm" data-up="${i}">▲</button><button class="sm" data-dn="${i}">▼</button>` : `<button class="sm" data-add="${id}">+ incluir</button>`}</div></div>`;
+}
+let listKey = '';
+function renderLogoList() {
+  const rs = (config.rounds || []).filter(id => logos[id]);
+  const out = Object.keys(logos).filter(id => !rs.includes(id)).sort((a, b) => (logos[a].name || '').localeCompare(logos[b].name || ''));
+  const key = JSON.stringify([rs, out, editId, slots().map(p => p && p.name), config.drawTime, rs.concat(out).map(id => { const l = logos[id]; return [l.name, l.thumb ? l.thumb.length : 0, !!l.image, l.script, l.challenge, Engine.versionsOf(l).map(v => v.actions.length)]; })]);
+  if (key === listKey) return; listKey = key;
+  $('#logoList').innerHTML = rs.map((id, i) => itemHtml(id, i, true)).join('') || '<div class="mut">Nenhuma logo na partida. Use "⭐ Criar as 10 sugeridas".</div>';
+  $('#outList').innerHTML = out.map(id => itemHtml(id, 0, false)).join('') || '<div class="hint">(vazio)</div>';
+  const [a, b] = totals();
+  $('#totalBox').innerHTML = `Placar final roteirizado: ${esc(slotName(1))} <b>${fmt1(a)}</b> × <b>${fmt1(b)}</b> ${esc(slotName(2))} — ` + (b > a ? `<span style="color:var(--good)">👑 Jogador 2 vence ✔</span>` : `<span class="warn">⚠ o Jogador 2 não está vencendo — ajuste as notas</span>`);
+  $$('.li').forEach(el => {
+    el.onclick = e => { if (e.target.closest('button')) return; openLogo(el.dataset.id); };
+    el.ondragstart = e => { dragId = el.dataset.id; el.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragId); } catch (_) { } };
+    el.ondragend = () => { dragId = null; el.classList.remove('drag'); $$('.li.over').forEach(x => x.classList.remove('over')); };
+    el.ondragover = e => { if (!dragId) return; e.preventDefault(); $$('.li.over').forEach(x => x.classList.remove('over')); el.classList.add('over'); };
+    el.ondrop = e => { e.preventDefault(); e.stopPropagation(); if (!dragId || dragId === el.dataset.id) return; if (el.dataset.in === '1') moveTo(dragId, el.dataset.id); else ref('config/rounds').set(rs.filter(x => x !== dragId)); };
+  });
+  $('#logoList').ondragover = e => { if (dragId) e.preventDefault(); };
+  $('#logoList').ondrop = e => { if (!dragId) return; e.preventDefault(); moveTo(dragId, '__end'); };
+  $('#outList').ondragover = e => { if (dragId) e.preventDefault(); };
+  $('#outList').ondrop = e => { if (!dragId) return; e.preventDefault(); ref('config/rounds').set(rs.filter(x => x !== dragId)); };
+  const mv = (i, d) => { const a2 = rs.slice(), j = i + d; if (j < 0 || j >= a2.length) return; [a2[i], a2[j]] = [a2[j], a2[i]]; ref('config/rounds').set(a2); };
+  $$('[data-up]').forEach(b2 => b2.onclick = () => mv(+b2.dataset.up, -1));
+  $$('[data-dn]').forEach(b2 => b2.onclick = () => mv(+b2.dataset.dn, 1));
+  $$('[data-add]').forEach(b2 => b2.onclick = () => ref('config/rounds').set([...rs, b2.dataset.add]));
+}
+function moveTo(id, beforeId) { // coloca "id" antes de "beforeId" (ou no fim)
+  const rs = (config.rounds || []).filter(x => logos[x] && x !== id);
+  const i = beforeId === '__end' ? rs.length : rs.indexOf(beforeId);
+  rs.splice(i < 0 ? rs.length : i, 0, id);
+  ref('config/rounds').set(rs);
+}
+
+/* --- abrir / criar / salvar (salva sozinho) --- */
+function openLogo(id) {
+  stopRec(); stopPreview();
+  if (saveTimer) { clearTimeout(saveTimer); saveNow(); }
+  const l = logos[id]; if (!l) return;
+  editId = id;
+  const vs = Engine.versionsOf(l);
+  E = { name: l.name || '', image: l.image || '', challenge: l.challenge ? clone(l.challenge) : {}, script: scriptOf(l), versions: [vs[0] ? clone(vs[0]) : blankVer(0), vs[1] ? clone(vs[1]) : blankVer(1)] };
+  E.versions.forEach((v, i) => v.label = VLABEL[i]);
+  $('#noSel').style.display = 'none'; $('#edBody').style.display = '';
+  $('#logoName').value = E.name;
+  vi = 0; $('#saveSt').textContent = '';
+  showOrig(); renderChallengeForm(); renderScriptBox(); fitRec(); ensureRec(true); selVersion(0); listKey = ''; renderLogoList();
+}
+function scheduleSave() { $('#saveSt').textContent = 'salvando…'; clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 700); }
+async function saveNow() {
+  saveTimer = null;
+  if (!editId || !E) return;
+  const id = editId, data = clone(E);
+  const first = data.versions.find(v => v.actions.length);
+  data.versions.forEach(v => { if (!v.cw) { v.cw = rec ? rec.canvas.width : 800; v.ch = rec ? rec.canvas.height : 500; } });
+  const thumb = data.image ? await shrink(data.image, 160, 100) : first ? Engine.renderToDataURL(first, 160, 100, 0.7) : '';
+  try {
+    await ref('logos/' + id).set({ name: data.name || 'Sem nome', versions: data.versions, challenge: Object.keys(data.challenge).length ? data.challenge : null, script: data.script, image: data.image || null, thumb, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+    if (editId === id) $('#saveSt').textContent = '✔ salvo';
+  } catch (e) { $('#saveSt').textContent = ''; toast('Erro ao salvar: ' + e.message); }
+}
+function shrink(src, w, h) { return new Promise(res => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); const k = Math.min(w / i.width, h / i.height); x.drawImage(i, (w - i.width * k) / 2, (h - i.height * k) / 2, i.width * k, i.height * k); res(c.toDataURL('image/jpeg', 0.75)); }; i.onerror = () => res(''); i.src = src; }); }
+$('#btnNewLogo').onclick = async () => {
+  const r = ref('logos').push();
+  await r.set({ name: 'Nova logo', script: { good: 2, s1: 5, s2: 7 }, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+  await ref('config/rounds').set([...(config.rounds || []).filter(x => logos[x]), r.key]);
+  setTimeout(() => { openLogo(r.key); $('#logoName').select(); }, 150);
+};
+$('#btnPreset').onclick = async () => {
+  if (!confirmBox('Criar as 10 logos sugeridas (nome, desafio e roteiro — o Jogador 2 vira no final e vence) e colocar como as rodadas da partida?\n\n' + PRESET.map((p, i) => `${i + 1}. ${p.name}  ${chipsOf(p).join(' ')}`).join('\n'))) return;
+  const ids = [];
+  for (const p of PRESET) {
+    const ex = Object.keys(logos).find(id => (logos[id].name || '').toLowerCase() === p.name.toLowerCase());
+    if (ex) { ids.push(ex); if (p.challenge.announce && !(logos[ex].challenge && logos[ex].challenge.announce)) await ref('logos/' + ex + '/challenge/announce').set(p.challenge.announce); continue; }
+    const r = ref('logos').push();
+    await r.set({ name: p.name, challenge: Object.keys(p.challenge).length ? p.challenge : null, script: p.script, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+    ids.push(r.key);
+  }
+  await ref('config/rounds').set(ids);
+  toast('10 logos criadas ✔ Agora é só subir a logo real e desenhar as versões');
+};
+$('#logoName').oninput = () => { if (!E) return; E.name = $('#logoName').value; updateHead(); scheduleSave(); };
+$('#inRounds').onchange = () => {
+  const rs = (config.rounds || []).filter(x => logos[x] && x !== editId);
+  ref('config/rounds').set($('#inRounds').checked ? [...rs, editId] : rs);
+};
+$('#btnDup').onclick = async () => { if (!editId) return; const l = logos[editId]; const r = ref('logos').push(); await r.set(Object.assign({}, l, { name: l.name + ' (cópia)', updatedAt: firebase.database.ServerValue.TIMESTAMP })); toast('Duplicada (ficou fora da partida)'); };
+$('#btnDel').onclick = () => {
+  if (!editId || !confirmBox('Apagar a logo "' + (E && E.name) + '"?')) return;
+  const id = editId; clearTimeout(saveTimer); saveTimer = null; editId = null; E = null;
+  ref('logos/' + id).remove(); ref('config/rounds').set((config.rounds || []).filter(x => x !== id));
+  $('#edBody').style.display = 'none'; $('#noSel').style.display = '';
+};
+
+/* --- logo real --- */
+function fileToLogo(file) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = 800; c.height = 500;
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 800, 500);
+      const s = Math.min(760 / img.width, 460 / img.height), w = img.width * s, h = img.height * s;
+      x.drawImage(img, (800 - w) / 2, (500 - h) / 2, w, h);
+      URL.revokeObjectURL(img.src); res(c.toDataURL('image/jpeg', 0.88));
+    };
+    img.onerror = rej; img.src = URL.createObjectURL(file);
+  });
+}
+async function setOrigFile(f) {
+  if (!f || !E) return;
+  try { E.image = await fileToLogo(f); showOrig(); scheduleSave(); toast('Logo real carregada ✔'); } catch (_) { toast('Não consegui abrir essa imagem'); }
+}
+function showOrig() { $('#realPv').innerHTML = E && E.image ? `<img src="${E.image}" alt="">` : '?'; applyRef(); }
+$('#origFile').onchange = e => { setOrigFile(e.target.files[0]); e.target.value = ''; };
+$('#realDrop').ondragover = e => { e.preventDefault(); $('#realDrop').classList.add('over'); };
+$('#realDrop').ondragleave = () => $('#realDrop').classList.remove('over');
+$('#realDrop').ondrop = e => { e.preventDefault(); $('#realDrop').classList.remove('over'); setOrigFile(e.dataTransfer.files[0]); };
+$('#btnOrigDel').onclick = () => { if (!E) return; E.image = ''; showOrig(); scheduleSave(); };
+$('#refShow').onchange = () => applyRef(); $('#refOp').oninput = () => applyRef();
+function applyRef() { if (rec) rec.setRef((E && E.image) || '', +$('#refOp').value, !!(E && E.image) && $('#refShow').checked && !previewing); }
+
+/* --- gravador: versão BOA / RUIM --- */
+function fitRec() { const w = $('#recWrap').clientWidth; if (w) $('#recHost').style.transform = `scale(${w / 1280})`; }
+addEventListener('resize', fitRec);
+const curVer = () => E.versions[vi];
+function ensureRec(force) {
+  if (!logosVisible() || !E) return;
+  const ch = Engine.challengeOf({ challenge: E.challenge });
+  const pal = ch.colors || basePalette();
+  const key = JSON.stringify([pal, ch.bucket, ch.eraser, ch.fixedSize, ch.scale, config.customCursor !== false]);
+  if (rec && key === recKey && !force) return;
+  stopRec(); stopPreview();
+  if (rec) rec.destroy();
+  rec = Engine.createBoard($('#recHost'), { palette: pal, bucket: ch.bucket, eraser: ch.eraser, fixedSize: ch.fixedSize, brand: 'MODO<br>GRAVAÇÃO', customCursor: config.customCursor !== false });
+  Engine.applyCursorVars(rec.root);
+  rec.root.classList.toggle('cc', config.customCursor !== false);
+  recKey = key;
+  rec.layout(ch.scale);
+  rec.setManual(!!recording);
+  rec.setTimer('', 1, false);
+  rec.onAction = a => { addAction(a); updateInfo(); scheduleSave(); if (a.k === 'd') { stopRec(); toast('✅ FINALIZEI gravado — gravação parada'); } };
+  rec.onDone = () => { if (previewing) toast('✅ (o jogador clicou em FINALIZEI)'); };
+  redraw(); updateHead(); applyRef();
+}
+function addAction(a) { // guarda no "espaço" da versão, sem perder qualidade se o canvas mudar
+  const v = curVer(), cw = rec.canvas.width, ch = rec.canvas.height;
+  if (!v.actions.length || !v.cw) { v.cw = cw; v.ch = ch; v.actions.push(a); return; }
+  if (v.cw === cw && v.ch === ch) { v.actions.push(a); return; }
+  const k = Math.min(cw / v.cw, ch / v.ch), ox = (cw - v.cw * k) / 2, oy = (ch - v.ch * k) / 2;
+  const inv = (x, y) => [Math.round((x - ox) / k * 2) / 2, Math.round((y - oy) / k * 2) / 2];
+  const tr = a.tr ? { st: a.tr.st, s: a.tr.s.map(sm => sm.c ? Object.assign({}, sm, { c: inv(sm.c[0], sm.c[1]) }) : sm) } : undefined;
+  if (a.k === 'u' || a.k === 'r' || a.k === 'd') { v.actions.push(Object.assign({}, a, tr ? { tr } : {})); return; }
+  if (a.k === 's') { const p = []; for (let i = 0; i < a.p.length; i += 2) p.push(...inv(a.p[i], a.p[i + 1])); const px = Engine.SIZES[a.s] / k; let si = 0, bd = 1e9; Engine.SIZES.forEach((s, i) => { if (Math.abs(s - px) < bd) { bd = Math.abs(s - px); si = i; } }); v.actions.push(Object.assign({}, a, { p, s: si }, tr ? { tr } : {})); }
+  else { const [x, y] = inv(a.x, a.y); v.actions.push(Object.assign({}, a, { x, y, a: Math.round((a.a || 0) / k / k) }, tr ? { tr } : {})); }
+}
+function redraw() { if (rec && E) rec.render(curVer().actions.length ? curVer() : null); }
+function whoGets(v) { const s = E ? E.script : { good: 2 }; const slot = v === 0 ? s.good : 3 - s.good; return { slot, name: slotName(slot) }; }
+function updateHead() {
+  if (!rec || !E) return;
+  const w = whoGets(vi);
+  rec.setHead('', E.name || 'NOVA LOGO');
+  rec.setSub((previewing ? 'testando: ' : 'gravando: ') + (vi === 0 ? 'versão boa' : 'versão ruim'));
+  rec.setChallenges(chipsOf({ challenge: E.challenge }));
+  rec.side.innerHTML = `<div style="font-family:'Lilita One',sans-serif;font-size:22px;text-align:center;color:${vi === 0 ? '#00a854' : '#e0203f'}">${vi === 0 ? '✅ VERSÃO BOA' : '❌ VERSÃO RUIM'}</div><div style="text-align:center;margin-top:8px"><img src="${slotAvatar(w.slot)}" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:4px solid #0a2e4d"></div><div style="text-align:center;font-weight:900;font-size:13px;color:#3d7a99;margin-top:4px">vai para</div><div style="text-align:center;font-weight:900;font-size:20px">${esc(w.name)}</div><div style="text-align:center;font-weight:800;font-size:12px;color:#3d7a99">(Jogador ${w.slot})</div><div style="font-weight:800;font-size:12px;color:#3d7a99;text-align:center;margin-top:14px">A ordem dos traços é a ordem em que o robô desenha.</div>`;
+  $('#recFrame').className = (vi === 0 ? 'good' : 'bad') + (previewing ? ' testing' : '');
+  $('#recFrame').classList.toggle('recording', !!recording);
+  $('#recBanner').textContent = previewing ? `▶ TESTANDO A ${vi === 0 ? 'VERSÃO BOA' : 'VERSÃO RUIM'} (como ${w.name} vai ver)` : recording ? `🔴 GRAVANDO A ${vi === 0 ? 'VERSÃO BOA' : 'VERSÃO RUIM'} → vai para ${w.name} (Jogador ${w.slot})` : `${vi === 0 ? 'VERSÃO BOA' : 'VERSÃO RUIM'} → vai para ${w.name} (Jogador ${w.slot}) · clique em ⏺ COMEÇAR A GRAVAR`;
+}
+function renderVTabs() {
+  if (!E) return;
+  [0, 1].forEach(i => {
+    const w = whoGets(i), v = E.versions[i];
+    $(i === 0 ? '#vgTo' : '#vbTo').textContent = `vai para: ${w.name} (Jogador ${w.slot})`;
+    $(i === 0 ? '#vgCnt' : '#vbCnt').textContent = v.actions.length ? `${v.actions.length} traço(s) · ⏱ ${fmtDur(v.dur || 0)} de gravação` : '⚠ ainda não gravada';
+  });
+  $$('.vtab').forEach(b => b.classList.toggle('on', +b.dataset.v === vi));
+}
+$$('.vtab').forEach(b => b.onclick = () => selVersion(+b.dataset.v));
+function selVersion(i) {
+  stopRec(); stopPreview();
+  vi = i ? 1 : 0;
+  if (rec) { rec.resetState(); rec.clearTrack(); }
+  const w = whoGets(vi); $('#pvQ').value = w.slot === 1 ? E.script.q1 : E.script.q2; $('#pvQv').textContent = $('#pvQ').value;
+  redraw(); renderVTabs(); updateHead(); updateInfo(); recTick();
+}
+function updateInfo() {
+  if (!E) return;
+  renderVTabs();
+  const v = curVer();
+  if (rec && v.actions.length) {
+    const t = roundTime({ challenge: E.challenge });
+    if (Engine.hasTrack(v)) {
+      const ops = Engine.genTrackOps(rec, v, 100, 'est', rec.getCursor());
+      let ms = 0; for (const o of ops) ms += o.c;
+      const sec = ms / 1000, minSec = sec / 1.8;
+      $('#pvEst').innerHTML = `🖱️ <b>Trajeto do mouse gravado</b> — o cursor do jogador vai repetir exatamente o seu movimento. Duração: <b>${sec.toFixed(1)} s</b> no seu ritmo (mínimo ${minSec.toFixed(1)} s se o jogador mexer bastante o mouse). Tempo desta rodada: <b>${t}s</b>.` + (minSec > t ? ' <span class="warn">⚠ não vai dar tempo — desenhe mais rápido ou aumente o tempo da rodada (ou deixe "Completar desenho no fim do tempo" ligado).</span>' : sec > t ? ' <span class="warn">⚠ no ritmo normal passa do tempo — o jogador vai ter que mexer o mouse rápido.</span>' : '');
+    } else {
+      const ops = Engine.genOps(rec, v, 100, 'est', rec.getCursor());
+      let tot = 0; for (const o of ops) tot += o.c;
+      const px = tot / (+config.speed || 0.6);
+      $('#pvEst').innerHTML = `<span class="warn">Esta versão foi gravada antes do trajeto do mouse existir — o caminho é gerado automaticamente. Limpe e desenhe de novo para o cursor seguir o seu movimento.</span> Mouse necessário ≈ <b>${Math.round(px).toLocaleString('pt-BR')} px</b>. Tempo desta rodada: <b>${t}s</b>.`;
+    }
+  } else $('#pvEst').textContent = '';
+}
+function undo() { if (!E || previewing || recording || !curVer().actions.length) return; curVer().actions.pop(); redraw(); updateInfo(); scheduleSave(); }
+$('#btnUndo').onclick = undo;
+$('#btnClearRec').onclick = () => { if (!E || previewing) return; if (!curVer().actions.length || confirmBox('Limpar o desenho desta versão?')) { stopRec(); Object.assign(curVer(), { actions: [], cw: 0, ch: 0, dur: 0 }); redraw(); updateInfo(); recTick(); scheduleSave(); } };
+$('#pvQ').oninput = () => { $('#pvQv').textContent = $('#pvQ').value; };
+$('#btnPreview').onclick = () => {
+  if (!E || !curVer().actions.length) { toast('Nada gravado nesta versão'); return; }
+  stopRec(); stopPreview();
+  rec.setManual(false); rec.clear(); rec.resetState(); rec.showFake(true);
+  const o = rec.origin(), start = { x: o.x + rec.canvas.width / 2, y: o.y + rec.canvas.height + 30 };
+  const runner = Engine.createRunner(rec, curVer(), { q: +$('#pvQ').value, seed: 'pv' + Math.random(), start });
+  previewing = { runner, last: performance.now(), t0: performance.now() };
+  applyRef(); updateHead(); recTick();
+  const total = roundTime({ challenge: E.challenge }) * 1000;
+  const step = t => {
+    if (!previewing || previewing.runner !== runner) return;
+    const dt = Math.min(0.05, (t - previewing.last) / 1000); previewing.last = t;
+    runner.step(runner.unit === 'ms' ? dt * 1000 : dt * 650 * (+config.speed || 0.6)); // trajeto gravado: em tempo real
+    const el = t - previewing.t0;
+    rec.setTimer(fmtTime(Math.max(0, total - el)), 1 - el / total, total - el < 10000);
+    if (!runner.done) previewing.raf = requestAnimationFrame(step); else rec.setTimer('✔', 1, false);
+  };
+  previewing.raf = requestAnimationFrame(step);
+};
+function stopPreview() {
+  if (!previewing) return;
+  cancelAnimationFrame(previewing.raf); previewing = null;
+  if (!rec) return;
+  rec.showFake(false); rec.setManual(!!recording); rec.resetState(); redraw(); rec.setTimer('', 1, false); applyRef(); updateHead(); recTick();
+}
+$('#btnPreviewStop').onclick = () => stopPreview();
+
+/* --- roteiro desta rodada --- */
+function renderScriptBox() {
+  if (!E) return;
+  const s = E.script;
+  [1, 2].forEach(n => { $('#wg' + n + 'img').src = slotAvatar(n); $('#wg' + n + 'name').textContent = slotName(n); });
+  $$('.wg').forEach(b => b.classList.toggle('on', +b.dataset.good === s.good));
+  $('#mapTxt').innerHTML = `<span class="tag-good">✅ VERSÃO BOA</span> → ${esc(slotName(s.good))} (Jogador ${s.good})<br><span class="tag-bad">❌ VERSÃO RUIM</span> → ${esc(slotName(3 - s.good))} (Jogador ${3 - s.good})`;
+  ['s1', 's2'].forEach(k => { if (document.activeElement !== $('#' + k)) $('#' + k).value = s[k]; });
+  ['q1', 'q2'].forEach(k => { $('#' + k).value = s[k]; $('#' + k + 'v').textContent = s[k]; });
+  $('#inRounds').checked = (config.rounds || []).includes(editId);
+}
+$$('.wg').forEach(b => b.onclick = () => { if (!E) return; E.script.good = +b.dataset.good; renderScriptBox(); selVersion(vi); renderLogoList(); scheduleSave(); });
+['s1', 's2'].forEach(k => $('#' + k).onchange = () => { if (!E) return; E.script[k] = Math.max(0, Math.min(10, +$('#' + k).value || 0)); renderScriptBox(); scheduleSave(); });
+['q1', 'q2'].forEach(k => { $('#' + k).oninput = () => { $('#' + k + 'v').textContent = $('#' + k).value; }; $('#' + k).onchange = () => { if (!E) return; E.script[k] = +$('#' + k).value; scheduleSave(); }; });
+
+/* --- desafio --- */
+const basePalette = () => (config.palette && config.palette.length) ? config.palette : Engine.DEFAULT_PALETTE;
+$('#chSize').innerHTML += Engine.SIZE_NAMES.map((n, i) => `<option value="${i}">só ${n.toLowerCase()}</option>`).join('');
+function renderChallengeForm() {
+  if (!E) return;
+  const c = E.challenge, colors = Engine.asArray(c.colors);
+  if (document.activeElement !== $('#chTime')) $('#chTime').value = c.time || '';
+  $('#chScale').value = String(c.scale || 1);
+  if (![...$('#chScale').options].some(o => o.value === $('#chScale').value)) $('#chScale').value = '1';
+  $('#chColorsOn').checked = colors.length > 0;
+  $('#chBucket').checked = c.bucket !== false;
+  $('#chEraser').checked = c.eraser !== false;
+  $('#chSize').value = c.fixedSize == null ? '' : String(c.fixedSize);
+  if (document.activeElement !== $('#chNote')) $('#chNote').value = c.note || '';
+  if (document.activeElement !== $('#chAnn')) $('#chAnn').value = c.announce || '';
+  $('#chAnn').placeholder = Engine.announceText({ challenge: Object.assign({}, c, { announce: '' }) }, +config.drawTime || 60) || '(sem desafio: nada aparece)';
+  $('#chColors').className = 'swsel' + (colors.length ? '' : ' off');
+  $('#chColors').innerHTML = basePalette().map(col => `<button style="background:${col}" class="${colors.includes(col) ? 'on' : ''}" data-col="${col}"></button>`).join('');
+  $$('[data-col]').forEach(b => b.onclick = () => {
+    let cs = Engine.asArray(E.challenge.colors).slice();
+    cs = cs.includes(b.dataset.col) ? cs.filter(x => x !== b.dataset.col) : [...cs, b.dataset.col];
+    if (!cs.length) { toast('Deixe pelo menos 1 cor'); return; }
+    E.challenge.colors = cs; challengeChanged();
+  });
+  const ann = Engine.announceText({ challenge: c }, +config.drawTime || 60);
+  $('#chChips').innerHTML = (chipsHtml({ challenge: c }) || '<span class="mut">Sem desafio (rodada normal)</span>') + (ann ? `<div class="hint" style="margin-top:6px">Texto que vai aparecer: <b style="color:var(--y)">⚡ ${esc(ann)}</b></div>` : '');
+}
+function challengeChanged() { renderChallengeForm(); ensureRec(); updateHead(); updateInfo(); scheduleSave(); }
+$('#chTime').onchange = () => { const v = +$('#chTime').value; if (v) E.challenge.time = v; else delete E.challenge.time; challengeChanged(); };
+$('#chScale').onchange = () => { const v = +$('#chScale').value; if (v < 1) E.challenge.scale = v; else delete E.challenge.scale; challengeChanged(); };
+$('#chColorsOn').onchange = () => {
+  if ($('#chColorsOn').checked) { const pal = basePalette(); E.challenge.colors = [pal[0], pal.find((c, i) => i > 0 && c.toLowerCase() !== '#ffffff') || pal[1]]; }
+  else delete E.challenge.colors;
+  challengeChanged();
+};
+$('#chBucket').onchange = () => { if ($('#chBucket').checked) delete E.challenge.bucket; else E.challenge.bucket = false; challengeChanged(); };
+$('#chEraser').onchange = () => { if ($('#chEraser').checked) delete E.challenge.eraser; else E.challenge.eraser = false; challengeChanged(); };
+$('#chSize').onchange = () => { const v = $('#chSize').value; if (v === '') delete E.challenge.fixedSize; else E.challenge.fixedSize = +v; challengeChanged(); };
+$('#chAnn').onchange = () => { const v = $('#chAnn').value.trim(); if (v) E.challenge.announce = v; else delete E.challenge.announce; challengeChanged(); };
+$('#chNote').onchange = () => { const v = $('#chNote').value.trim(); if (v) E.challenge.note = v; else delete E.challenge.note; challengeChanged(); };
+
+/* =================================================
+   CONFIGURAÇÕES
+   ================================================= */
+let palEdit = [], palDirty = false;
+
+/* ---------- preview editável da contagem ---------- */
+const pvVal = k => { const el = document.querySelector(`[data-cfg="${k}"]`); return el && document.activeElement === el ? el.value : (config[k] == null ? DEF[k] : config[k]); };
+const pvNum = (k, d, lo, hi) => { const v = +pvVal(k); return Math.max(lo, Math.min(hi, isFinite(v) && pvVal(k) !== '' ? v : d)); };
+const pvFill = (str, o) => String(str == null ? '' : str).replace(/\{(\w+)\}/g, (m, k) => o[k] != null ? o[k] : m);
+let pvStage = 'title', pvPlay = null, pvLogoIdx = 0;
+function pvLogo() { const r = Math.min(pvLogoIdx, Math.max(0, nRounds() - 1)); return { r, l: roundLogo(r) || { name: 'NIKE' } }; }
+function pvRender(stage, sec, shown) {
+  const box = $('#pvBox'), inn = $('#pvIn'); if (!box) return;
+  inn.style.transform = `scale(${box.clientWidth / 1280})`;
+  const { r, l } = pvLogo(), o = { n: r + 1, total: nRounds() || 10, s: roundTime(l) };
+  const cfg = {}; Object.keys(DEF).forEach(k => cfg[k] = pvVal(k)); cfg.drawTime = config.drawTime;
+  const P = Engine.introPlan(l, cfg);
+  let html;
+  if (stage === 'cd') {
+    const n = sec == null ? pvNum('cdSecs', 0, 0, 10) || 3 : sec, sm = pvVal('cdText');
+    html = `<div class="ghost"></div><div class="dim"></div><div class="ov"><div class="big" data-k="${n}">${esc(n > 0 ? n : pvVal('cdGo'))}${sm ? `<small>${esc(sm)}</small>` : ''}</div></div>`;
+  } else if (stage === 'num') {
+    const n = sec == null ? P.n : sec;
+    html = `<div class="cur2"></div><div class="ov">${n ? `<div class="cdnum" data-k="${n}">${n}</div>` : ''}</div>`;
+  } else if (stage === 'title' || stage === 'chips') {
+    const tr = pvFill(pvVal('introRound'), o), ts = pvFill(pvVal('introSub'), o), k = stage === 'title' ? 0 : (shown == null ? P.chips.length : shown);
+    html = `<div class="cur2"></div><div class="ov"><div class="ttlw"><div class="ttl" style="${stage === 'chips' && shown != null ? 'animation:none' : ''}">${tr ? `<div class="r">${esc(tr)}</div>` : ''}${ts ? `<div class="s">${esc(ts)}</div>` : ''}<div class="nm">${esc(l.name || '???')}</div>${P.title ? `<div class="an">${esc(P.title)}</div>` : ''}</div>` +
+      `<div class="chs">${P.chips.map((c, i) => `<span class="${i < k ? (shown != null && i === k - 1 ? 'slam' : '') : 'hid'}">${esc(c)}</span>`).join('')}</div></div></div>`;
+  } else {
+    html = '<div class="ghost"></div><div class="ov">' + (pvVal('goText') ? `<div class="big">${esc(pvVal('goText'))}</div>` : '') + '</div>';
+  }
+  if (inn.dataset.h !== html) { inn.dataset.h = html; inn.innerHTML = html; }
+  $$('[data-pvs]').forEach(b => b.classList.toggle('on', b.dataset.pvs === stage));
+  $('#pvLbl').textContent = (stage === 'chips' || stage === 'title') ? `${P.chips.length} desafio(s) nesta logo` : '';
+}
+function pvStop() { if (pvPlay) { cancelAnimationFrame(pvPlay.raf); pvPlay = null; $('#pvPlay').textContent = '▶ Ver tudo'; } }
+function pvStart() {
+  pvStop();
+  const { l } = pvLogo(), cfg = {}; Object.keys(DEF).forEach(k => cfg[k] = pvVal(k)); cfg.drawTime = config.drawTime;
+  const P = Engine.introPlan(l, cfg), cd = (() => { const x = pvNum('cdSecs', 0, 0, 10); return x ? x * 1000 + 500 : 0; })(), t0 = performance.now();
+  $('#pvPlay').textContent = '⏹ Parar';
+  const step = () => {
+    const e0 = performance.now() - t0, e = e0 - cd;
+    if (e0 < cd) { const n = Math.ceil((cd - 500 - e0) / 1000); pvRender('cd', n); }
+    else if (e < P.titleAt) pvRender('num', '');
+    else if (e < P.chipsAt) pvRender('title');
+    else if (e < P.openAt) pvRender('chips', null, Math.min(P.chips.length, Math.floor((e - P.chipsAt) / P.chip) + 1));
+    else if (e < P.total + 1000) pvRender('go');
+    else { pvStop(); pvRender(pvStage); return; }
+    pvPlay.raf = requestAnimationFrame(step);
+  };
+  pvPlay = { raf: requestAnimationFrame(step) };
+}
+$$('[data-pvs]').forEach(b => b.onclick = () => { pvStop(); pvStage = b.dataset.pvs; pvRender(pvStage); });
+$('#pvPlay').onclick = () => pvPlay ? pvStop() : pvStart();
+$$('[data-pv]').forEach(el => { el.addEventListener('input', () => { pvStop(); pvStage = el.dataset.pv; pvRender(pvStage); }); el.addEventListener('focus', () => { pvStop(); pvStage = el.dataset.pv; pvRender(pvStage); }); });
+$('#pvLogo').onchange = () => { pvLogoIdx = +$('#pvLogo').value; pvRender(pvStage); };
+function pvFillLogos() {
+  const sel = $('#pvLogo'), opts = (config.rounds || []).map((id, i) => `<option value="${i}">${i + 1}. ${esc(logoName(id))}</option>`).join('') || '<option value="0">NIKE (exemplo)</option>';
+  if (sel.dataset.h !== opts) { sel.dataset.h = opts; sel.innerHTML = opts; sel.value = Math.min(pvLogoIdx, Math.max(0, nRounds() - 1)); }
+  if (!pvPlay) pvRender(pvStage);
+}
+try { new ResizeObserver(() => { if (!pvPlay) { $('#pvIn').dataset.h = ''; pvRender(pvStage); } else $('#pvIn').style.transform = `scale(${$('#pvBox').clientWidth / 1280})`; }).observe($('#pvBox')); } catch (_) { addEventListener('resize', () => { if (!pvPlay) pvRender(pvStage); }); }
+function renderConfig() {
+  $$('[data-cfg]').forEach(el => {
+    if (document.activeElement === el) return;
+    const v = config[el.dataset.cfg];
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v;
+  });
+  if (!palDirty) { palEdit = basePalette().slice(); renderPal(); }
+  try { pvFillLogos(); } catch (_) { }
+  if (E) { renderChallengeForm(); ensureRec(); updateInfo(); renderScriptBox(); }
+}
+$$('[data-cfg]').forEach(el => el.onchange = () => {
+  const k = el.dataset.cfg, v = el.type === 'checkbox' ? el.checked : el.type === 'number' ? +el.value : el.value;
+  ref('config/' + k).set(v).then(() => toast('Salvo ✔'));
+});
+function renderPal() {
+  $('#palEd').innerHTML = palEdit.map((c, i) => `<label><input type="color" value="${c}" data-pi="${i}">${i + 1}</label>`).join('');
+  $$('[data-pi]').forEach(i => i.oninput = () => { palEdit[+i.dataset.pi] = i.value; palDirty = true; });
+}
+$('#btnPalAdd').onclick = () => { if (palEdit.length >= 24) return; palEdit.push('#888888'); palDirty = true; renderPal(); };
+$('#btnPalDel').onclick = () => { if (palEdit.length <= 2) return; palEdit.pop(); palDirty = true; renderPal(); };
+$('#btnPalReset').onclick = () => { palEdit = Engine.DEFAULT_PALETTE.slice(); palDirty = true; renderPal(); };
+$('#btnPalSave').onclick = () => { palDirty = false; ref('config/palette').set(palEdit).then(() => toast('Paleta salva ✔')); };
+})();
+</script>
+</body>
+</html>

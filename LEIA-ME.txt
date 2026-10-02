@@ -1,0 +1,119 @@
+LOGO DE MEMÓRIA — jogo roteirizado para 2 jogadores
+====================================================
+
+ARQUIVOS (suba tudo exatamente com essa estrutura)
+  index.html          -> tela dos jogadores (tela cheia, centralizada)
+  engine.js           -> motor de desenho + roteiro
+  firebase-config.js  -> configuração do Firebase (já preenchida: logo-roteirizado)
+  favicon.svg         -> ícone de lápis da aba do navegador
+  ADM/index.html      -> painel ADM (sem senha)
+
+  Jogo: https://problemsite.github.io/NOME-DO-REPO/
+  ADM:  https://problemsite.github.io/NOME-DO-REPO/ADM/   ("ADM" maiúsculo)
+
+
+FIREBASE (uma vez só, no projeto logo-roteirizado)
+--------------------------------------------------
+1. Authentication > Método de login > "Anônimo" > Ativar.
+2. Realtime Database > Criar banco de dados (modo bloqueado).
+3. Realtime Database > Regras > apague tudo, cole e Publicar:
+
+   {
+     "rules": {
+       "logoMemoria": {
+         ".read": "auth != null",
+         ".write": "auth != null"
+       }
+     }
+   }
+
+4. Se o banco NÃO for nos EUA, troque o "databaseURL" no firebase-config.js.
+
+
+COMO FUNCIONA A PARTIDA
+-----------------------
+- Ao abrir o jogo já aparece o lobby com as 2 vagas (JOGADOR 1 e
+  JOGADOR 2). Clicar em qualquer parte da vaga já entra nela. Depois de
+  entrar, dá pra trocar a foto e o nome no próprio cartão até clicar em
+  ESTOU PRONTO (se cancelar o pronto, volta a poder editar). Nome e foto são opcionais: sem nome vira "Jogador 1/2"
+  e a foto vira "J1"/"J2"; com nome, a foto vira a inicial (Problems -> P).
+  Ao escolher uma foto dá pra arrastar e dar zoom para recortar. Quem pegar a vaga do JOGADOR 2 é o vencedor do roteiro.
+  Dá pra "sair da vaga" antes de começar. Pelo ADM dá pra remover alguém
+  e liberar a vaga.
+- Os dois clicam em "ESTOU PRONTO!" -> contagem 3, 2, 1 -> rodada 1.
+- Cada rodada: nome da logo + contagem -> TEXTO DO DESAFIO em tela cheia
+  (se a rodada tiver desafio) -> cronômetro -> desenho.
+- Durante a contagem da rodada o mouse vai deslizando sozinho até o ponto
+  onde a gravação começa (sem dar pulo quando o desenho começa).
+- Na lateral do quadro tem DESFAZER, REFAZER e "✅ FINALIZEI". Quem clica em
+  FINALIZEI envia o desenho e espera o outro ("Aguardando o outro
+  jogador…"). Se os dois finalizarem, a revelação começa na hora.
+- Acabou o tempo: fitas de polícia "PAROU!" cruzando a tela -> a cortina fecha -> suspense (tambor) ->
+  a cortina abre: foto e nome do Jogador 1, depois o desenho dele;
+  foto e nome do Jogador 2, depois o desenho dele; no meio, a LOGO DE
+  VERDADE; e por fim as notas.
+- Depois das notas aparece o botão "PRÓXIMO DESENHO ▶" (qualquer um dos
+  dois pode clicar). Com "Avançar sozinho" ligado, a próxima rodada também
+  começa sozinha depois de alguns segundos.
+- No fim: "E o grande campeão é…" -> o campeão aparece com raios de luz,
+  coroa e um TROFÉU que cai do céu; o 2º lugar entra ao lado e recebe uma
+  MEDALHA de prata. Depois aparece o botão "VOLTAR AO LOBBY" (os dois
+  continuam nas vagas e é só clicar em ESTOU PRONTO para jogar de novo). (O Jogador 2 vence, pelo roteiro sugerido.)
+
+
+ADM — PASSO A PASSO
+-------------------
+Aba "Logos & Rodadas":
+  1) "⭐ Criar as 10 sugeridas" (cria nome, desafio e roteiro das 10).
+  2) Clique numa logo da lista para editar. TUDO SALVA SOZINHO.
+     (1) Nome   (2) LOGO REAL: clique ou arraste a imagem de verdade
+     (3) Desenhos: aba verde "VERSÃO BOA" e aba vermelha "VERSÃO RUIM".
+         Cada aba mostra para qual jogador aquela versão vai.
+         Clique em "⏺ COMEÇAR A GRAVAR", desenhe, e depois "⏹ PARAR
+         GRAVAÇÃO". O cronômetro mostra quanto tempo a gravação durou
+         (fica salvo em cada versão e aparece na lista de logos).
+         "Testar" mostra como o jogador vai ver.
+         Ao regravar do zero, pincel, tamanho e cor voltam ao padrão.
+         A gravação PARA SOZINHA quando chega no tempo da rodada, ou quando
+         você clica em "✅ FINALIZEI" no quadro (o clique fica gravado).
+         Use os botões DESFAZER/REFAZER do quadro (o Ctrl+Z não aparece na
+         tela do jogador, então não é gravado). Balde no canvas todo também
+         é gravado. "Remover último passo" (fora da gravação) só edita.
+         O ADM grava o TRAJETO REAL do seu mouse (ida até os botões, cliques,
+         cores, curvas, pausas e ritmo). No jogo, o cursor repete exatamente
+         esse movimento, adaptado à tela de cada jogador. Desenhos feitos em
+         versões antigas não têm trajeto: limpe e desenhe de novo.
+     (4) Roteiro: quem pega a versão boa nesta rodada + nota de cada um
+     (5) Desafio: tempo, canvas menor, só X cores, sem balde, etc.
+         "Texto do desafio" = frase grande que aparece depois da contagem
+         (vazio = automático; "-" = não mostra). "Etiqueta extra" = só uma
+         etiqueta amarela a mais, não muda nada no jogo.
+  3) Arraste as logos na lista (ou ▲▼) para mudar a ordem das rodadas.
+     Arraste para "Fora da partida" para tirar uma logo.
+  Embaixo da lista aparece o placar final roteirizado e se o
+  Jogador 2 está vencendo.
+
+Aba "Configurações" > "🎬 Contagem e textos de cada rodada": como cada rodada
+começa — a cortina fecha (também saindo do lobby), o título (nome da logo +
+"Texto do desafio") e as regras da rodada (tempo, só X cores, sem balde…) caem em
+cima da cortina uma de cada vez, a cortina abre e aparece "JÁ!". Enquanto a cortina
+está fechada o mouse fake se posiciona sozinho no ponto inicial. Dá para mudar os
+textos e o tempo parado e ver tudo numa prévia ao vivo ("▶ Ver tudo"). Outras
+regras/etiquetas: "Etiqueta extra" no passo 5 da logo.
+
+Aba "Partida": botão AVANÇAR (ou espaço) força o próximo passo
+(começar, encerrar tempo, pular revelação, próxima rodada, campeão).
+Mostra os 2 jogadores ao vivo e o placar rodada por rodada.
+
+Aba "Configurações": "Quando o desenho termina, o mouse…" (o real vai para a
+posição do fake — padrão —, o fake vai para a posição do real, ou nada), "Jogador precisa mexer o mouse de verdade" (desmarcado
+por padrão: o mouse fake refaz a gravação sozinho, no mesmo ritmo;
+marcado = só avança enquanto o jogador mexe o mouse real), mouse customizado (ligado por padrão: o site todo usa
+seta, mãozinha, cursor de texto e "carregando" desenhados iguais aos do
+mouse "fake" — que também vira mãozinha em cima dos botões — então a troca
+não aparece), modo roteiro, "Suspense antes da revelação" (emoji e frase da
+cortina, ex.: 🥁 Será que eles lembraram?), avançar sozinho, pausa depois da
+revelação, modo teste (começa com 1 jogador), debug, tempo padrão,
+velocidade, "Margem de segurança nas bordas" (padrão 5%: respiro em cima,
+embaixo e dos lados para a câmera não tampar nada) e "Espaço livre nas laterais" (faixa só de fundo dos dois
+lados, para encaixar a câmera; 0 = ocupa a tela toda).
