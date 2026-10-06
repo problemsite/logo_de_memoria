@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Logo de Memória — ADM</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="../firebase-config.js"></script>
+<script src="/trava.js" data-site="logo_de_memoria" data-modo="adm"></script>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -423,10 +428,6 @@ main{padding:16px;max-width:1700px;margin:0 auto}
 </main>
 <div id="toast"></div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="../firebase-config.js"></script>
 <script src="../engine.js"></script>
 <script>
 (function () {
@@ -449,7 +450,7 @@ $$('.tab').forEach(b => b.onclick = () => {
 const logosVisible = () => $('#tab-logos').classList.contains('on');
 
 /* ---------- Firebase ---------- */
-firebase.initializeApp(window.FIREBASE_CONFIG);
+if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG);
 const db = firebase.database(), auth = firebase.auth();
 const ROOT = window.DB_ROOT || 'logoMemoria';
 const ref = p => db.ref(ROOT + (p ? '/' + p : ''));
@@ -457,7 +458,8 @@ const DEF = { needMove: false, customCursor: true, roteiro: true, autoFlow: true
 let offset = 0, config = Object.assign({}, DEF), game = { state: 'lobby' }, players = {}, logos = {}, drawings = {}, live = {};
 const now = () => Date.now() + offset;
 
-auth.signInAnonymously().then(() => {
+// só ADM: a trava (/trava.js) mostra a tela trancada para quem não é administrador
+(window.Trava ? Trava.ready.then(() => { if (!Trava.admin) throw new Error('trancado'); }) : Promise.resolve()).then(() => {
   db.ref('.info/serverTimeOffset').on('value', s => { offset = s.val() || 0; });
   db.ref('.info/connected').on('value', s => { if (!s.val()) $('#status').textContent = 'desconectado…'; });
   ref('config').on('value', s => { config = Object.assign({}, DEF, s.val() || {}); config.rounds = Engine.asArray(config.rounds); renderConfig(); renderAll(); });
@@ -467,7 +469,7 @@ auth.signInAnonymously().then(() => {
   ref('drawings').on('value', s => { drawings = s.val() || {}; renderCtrl(); });
   ref('live').on('value', s => { live = s.val() || {}; updateLive(); });
   setInterval(tick, 250);
-}).catch(e => { $('#status').textContent = 'Erro: ' + e.message; });
+}).catch(e => { if (e.message !== 'trancado') $('#status').textContent = 'Erro: ' + e.message; });
 function renderAll() { renderCtrl(); renderLogoList(); if (E) { renderScriptBox(); renderVTabs(); updateHead(); } try { pvFillLogos(); } catch (_) { } }
 
 /* ---------- jogadores (2 vagas) ---------- */

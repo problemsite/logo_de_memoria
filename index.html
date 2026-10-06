@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Logo de Memória</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="/trava.js" data-site="logo_de_memoria"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -375,10 +380,6 @@ body.scripted.scripted,body.scripted.scripted *{cursor:none!important}
   </section>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="firebase-config.js"></script>
 <script src="engine.js"></script>
 <script>
 (function () {
@@ -432,7 +433,7 @@ const fmtTime = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return Math
 const fmtScore = v => (Math.round(v * 10) / 10).toFixed(1).replace('.', ',');
 
 /* ---------- Firebase ---------- */
-firebase.initializeApp(window.FIREBASE_CONFIG);
+if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG);
 const db = firebase.database(), auth = firebase.auth();
 const ROOT = window.DB_ROOT || 'logoMemoria';
 const ref = p => db.ref(ROOT + (p ? '/' + p : ''));
@@ -444,8 +445,16 @@ const now = () => Date.now() + offset;
 
 (async () => {
   const perTab = new URLSearchParams(location.search).has('aba');
-  await auth.setPersistence(perTab ? firebase.auth.Auth.Persistence.SESSION : firebase.auth.Auth.Persistence.LOCAL);
-  const cred = await auth.signInAnonymously();
+  let cred;
+  if (perTab) {
+    // modo de teste (?aba): cada aba vira um jogador diferente
+    await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    cred = await auth.signInAnonymously();
+  } else {
+    // mantém o login de ADM deste navegador, se existir; senão entra anônimo
+    const u = await new Promise(r => { const off = auth.onAuthStateChanged(x => { off(); r(x); }); });
+    cred = u ? { user: u } : await auth.signInAnonymously();
+  }
   uid = cred.user.uid;
   start();
 })().catch(e => { $('#loadingTxt').textContent = 'Erro ao conectar: ' + e.message; console.error(e); });
